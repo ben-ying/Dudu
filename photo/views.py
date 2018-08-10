@@ -15,6 +15,9 @@ import PIL.Image
 import PIL.ExifTags
 import hashlib
 
+def index(request):
+    return render(request, 'index.html')
+
 def classification(request):
     if not os.path.isdir(SOURCE_PHOTO_FOLDER):
         return HttpResponse("Dir not exists")
