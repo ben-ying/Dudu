@@ -19,11 +19,22 @@ def index(request):
     return render(request, 'index.html')
 
 def classification(request):
-    if not os.path.isdir(SOURCE_PHOTO_FOLDER):
+    '''
+    for p in Photo.objects.all():
+        p.delete()
+
+    return HttpResponse("OK")
+    '''
+    folder = request.GET.get("folder", "")
+    print("folder: " + folder)
+    if not folder:
+        return HttpResponse("Error")
+
+    if not os.path.isdir(os.path.join(SOURCE_PHOTO_FOLDER, folder)):
         return HttpResponse("Dir not exists")
 
     n = 0
-    for root, directories, files in os.walk(SOURCE_PHOTO_FOLDER):
+    for root, directories, files in os.walk(os.path.join(SOURCE_PHOTO_FOLDER, folder)):
         total = len(files)
         for file_name in files:
             n += 1
@@ -71,22 +82,40 @@ def saveImage(file_path, file_name):
                     datetime = v.split(" ")[0].replace(":", "-") \
                             + " " + v.split(" ")[1]
                     photo.exif_datetime = datetime
-                    moveImage(file_name, file_path, datetime)
                 if k == "DateTimeOriginal":
                     datetime_original = v.split(" ")[0].replace(":", "-") \
                             + " " + v.split(" ")[1]
                     photo.exif_datetime_original = datetime_original
+                    moveImage(file_name, file_path, datetime)
                 if k == "DateTimeDigitized":
                     datetime_digitized = v.split(" ")[0].replace(":", "-") \
                             + " " + v.split(" ")[1]
                     photo.exif_datetime_digitized = datetime_digitized
             else:
-                print("Error key number")
+                print("Error key number: " + str(key_number))
         
         photo.save()
     else:
         print("File already Exists")
-
+'''
+    photos = Photo.objects.all()
+    for photo in photos:
+        if not photo.exif_datetime:
+            print("-------------------no datetime----------------")
+        elif not photo.exif_datetime_digitized:
+            print("-------------------no datetime digitized----------------")
+        elif not photo.exif_datetime_original:
+            print("-------------------no datetime original----------------")
+        elif photo.exif_datetime != photo.exif_datetime_digitized:
+            print("-------------------datetime vs digitized----------------")
+            print(str(photo.exif_datetime) + ", " + str(photo.exif_datetime_digitized) + ", " + str(photo.exif_datetime_original))
+        elif photo.exif_datetime != photo.exif_datetime_original:
+            print("-------------------datetime vs original----------------")
+        elif photo.exif_datetime_original != photo.exif_datetime_digitized:
+            print("-------------------original vs digitized----------------")
+        else:
+            print("----------------------OK--------------------------")
+'''
 
 def moveImage(file_name, file_path, img_datetime):
     photo_dir = os.path.join(MEDIA_ROOT, PHOTO_DIR, USER_DIR)
