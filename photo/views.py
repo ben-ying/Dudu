@@ -9,6 +9,7 @@ from myproject.settings import MEDIA_ROOT
 from myproject.settings import BIRTHDAY
 from myproject.settings import SOURCE_PHOTO_FOLDER
 from myproject.settings import PHOTO_DIR
+from shutil import copyfile
 
 import os
 import PIL.Image
@@ -49,13 +50,13 @@ def classification(request):
             file_path = os.path.join(root, file_name)
             if file_path.lower().endswith("jpg") \
                     or file_path.lower().endswith("jpeg"): 
-                saveImage(file_path, file_name, folder)
+                save_image(file_path, file_name, folder)
             else:
                 print("Error file format " + file_name.split(".")[-1])
 
     return HttpResponse("OK")
 
-def saveImage(file_path, file_name, folder):
+def save_image(file_path, file_name, folder):
     photo = Photo()
     photo.name = file_name
     hasher = hashlib.sha1()
@@ -68,6 +69,9 @@ def saveImage(file_path, file_name, folder):
         img = PIL.Image.open(file_path)
         for key_number, v in img._getexif().items():
             if key_number in PIL.ExifTags.TAGS:
+                # rstrip fix this error:
+                # A string literal cannot contain NUL (0x00) characters
+                v = str(v).rstrip(' \t\r\n\0')
                 k = PIL.ExifTags.TAGS[key_number]
                 if k == "ExifImageWidth":
                     photo.exif_image_width = v
@@ -84,7 +88,7 @@ def saveImage(file_path, file_name, folder):
                 if k == "ExifVersion":
                     photo.exif_version = v
                 if k == "SubjectLocation":
-                    photo.exif_subject_location = str(v)
+                    photo.exif_subject_location = v
                 if k == "DateTime":
                     datetime = v.split(" ")[0].replace(":", "-") \
                             + " " + v.split(" ")[1]
@@ -93,7 +97,7 @@ def saveImage(file_path, file_name, folder):
                     datetime_original = v.split(" ")[0].replace(":", "-") \
                             + " " + v.split(" ")[1]
                     photo.exif_datetime_original = datetime_original
-                    url = moveImage(file_name, file_path, folder, datetime)
+                    url = move_image(file_name, file_path, folder, datetime)
                     photo.url = url
                 if k == "DateTimeDigitized":
                     datetime_digitized = v.split(" ")[0].replace(":", "-") \
@@ -125,7 +129,7 @@ def saveImage(file_path, file_name, folder):
             print("----------------------OK--------------------------")
 '''
 
-def moveImage(file_name, file_path, folder, img_datetime):
+def move_image(file_name, file_path, folder, img_datetime):
     photo_dir = os.path.join(MEDIA_ROOT, PHOTO_DIR, folder)
     delta = relativedelta(datetime.strptime(
         img_datetime.split(" ")[0], '%Y-%m-%d'), 
@@ -138,7 +142,8 @@ def moveImage(file_name, file_path, folder, img_datetime):
 
     img_dir = os.path.join(photo_dir, sub_dir)
     os.makedirs(img_dir, exist_ok=True)
-    os.rename(file_path, os.path.join(img_dir, file_name))
+    #os.rename(file_path, os.path.join(img_dir, file_name))
+    copyfile(file_path, os.path.join(img_dir, file_name))
 
-    return os.path.join(MEDIA_URL, PHOTO_DIR, folder, img_dir, file_name)
+    return os.path.join(MEDIA_URL, PHOTO_DIR, folder, sub_dir, file_name)
 

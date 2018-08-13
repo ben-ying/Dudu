@@ -22,3 +22,6 @@ class Photo(models.Model):
     description = models.CharField('description', max_length=1024, blank=True, null=True)
     pub_date = models.DateTimeField('date published', auto_now_add=True)
     modify_date = models.DateTimeField('date modified', auto_now=True)
+
+    def __str__(self):
+        return self.name
