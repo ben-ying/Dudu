@@ -1,20 +1,14 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
-
-from .models import Photo
-from myproject.settings import MEDIA_URL
-from myproject.settings import MEDIA_ROOT
-from myproject.settings import BIRTHDAY
-from myproject.settings import SOURCE_PHOTO_FOLDER
-from myproject.settings import PHOTO_DIR
-from shutil import copyfile
-
 import os
 import PIL.Image
 import PIL.ExifTags
 import hashlib
+
+from django.shortcuts import render
+from django.http import HttpResponse
+
+from .models import Photo
+from .models import THUMBNAIL_DIR
+from myproject.settings import SOURCE_PHOTO_FOLDER
 
 
 def index(request):
@@ -33,16 +27,16 @@ def classification(request):
 
     return HttpResponse("OK")
     '''
-    folder = request.GET.get("folder", "")
-    print("folder: " + folder)
-    if not folder:
+    dir_name = request.GET.get("dir", "")
+    print("dir_name: " + dir_name)
+    if not dir_name:
         return HttpResponse("Error")
 
-    if not os.path.isdir(os.path.join(SOURCE_PHOTO_FOLDER, folder)):
+    if not os.path.isdir(os.path.join(SOURCE_PHOTO_FOLDER, dir_name)):
         return HttpResponse("Dir not exists")
 
     n = 0
-    for root, directories, files in os.walk(os.path.join(SOURCE_PHOTO_FOLDER, folder)):
+    for root, directories, files in os.walk(os.path.join(SOURCE_PHOTO_FOLDER, dir_name)):
         total = len(files)
         for file_name in files:
             n += 1
@@ -50,13 +44,13 @@ def classification(request):
             file_path = os.path.join(root, file_name)
             if file_path.lower().endswith("jpg") \
                     or file_path.lower().endswith("jpeg"): 
-                save_image(file_path, file_name, folder)
+                save_image(file_path, file_name, dir_name)
             else:
                 print("Error file format " + file_name.split(".")[-1])
 
     return HttpResponse("OK")
 
-def save_image(file_path, file_name, folder):
+def save_image(file_path, file_name, dir_name):
     photo = Photo()
     photo.name = file_name
     hasher = hashlib.sha1()
@@ -97,8 +91,7 @@ def save_image(file_path, file_name, folder):
                     datetime_original = v.split(" ")[0].replace(":", "-") \
                             + " " + v.split(" ")[1]
                     photo.exif_datetime_original = datetime_original
-                    url = move_image(file_name, file_path, folder, datetime)
-                    photo.url = url
+                    photo.set_photo_directory(file_name, file_path, dir_name, datetime_original)
                 if k == "DateTimeDigitized":
                     datetime_digitized = v.split(" ")[0].replace(":", "-") \
                             + " " + v.split(" ")[1]
@@ -107,6 +100,7 @@ def save_image(file_path, file_name, folder):
                 print("Error key number: " + str(key_number))
         
         photo.save()
+        photo.save_default_thumbnail_image()
     else:
         print("File already Exists")
 '''
@@ -128,22 +122,3 @@ def save_image(file_path, file_name, folder):
         else:
             print("----------------------OK--------------------------")
 '''
-
-def move_image(file_name, file_path, folder, img_datetime):
-    photo_dir = os.path.join(MEDIA_ROOT, PHOTO_DIR, folder)
-    delta = relativedelta(datetime.strptime(
-        img_datetime.split(" ")[0], '%Y-%m-%d'), 
-        datetime.strptime(BIRTHDAY, '%Y-%m-%d'))
-
-    if delta.years == 0:
-        sub_dir = str(delta.months + 1) + "M"
-    else:
-        sub_dir = str(delta.years + 1) + "Y"
-
-    img_dir = os.path.join(photo_dir, sub_dir)
-    os.makedirs(img_dir, exist_ok=True)
-    #os.rename(file_path, os.path.join(img_dir, file_name))
-    copyfile(file_path, os.path.join(img_dir, file_name))
-
-    return os.path.join(MEDIA_URL, PHOTO_DIR, folder, sub_dir, file_name)
-

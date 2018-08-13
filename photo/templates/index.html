@@ -19,8 +19,8 @@
         {% if photos %}
             {% for photo in photos %}
             <div id="lightgallery">
-                <a href="{{photo.url}}">
-                    <img src="{{photo.url}}" />
+                <a href="{{ photo.get_url }}">
+                    <img src="{{ photo.get_thumbnail_url }}" />
                 </a>
             </div>
             {% endfor %}
