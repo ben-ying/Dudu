@@ -5,6 +5,7 @@ import hashlib
 
 from django.shortcuts import render
 from django.http import HttpResponse
+from collections import defaultdict
 
 from .models import Photo
 from .models import THUMBNAIL_DIR
@@ -12,9 +13,14 @@ from myproject.settings import SOURCE_PHOTO_FOLDER
 
 
 def index(request):
-    photos = Photo.objects.all()
+    photo_dict = defaultdict(list)
+    photos = Photo.objects.all().order_by('exif_datetime_original')
+
+    for photo in photos:
+        photo_dict[photo.age.replace("M", "个月").replace("Y", "岁")].append(photo)
+
     context = {
-        'photos': photos,
+        'photo_dict': photo_dict.items(),
     }
 
     return render(request, 'index.html', context)
@@ -91,7 +97,7 @@ def save_image(file_path, file_name, dir_name):
                     datetime_original = v.split(" ")[0].replace(":", "-") \
                             + " " + v.split(" ")[1]
                     photo.exif_datetime_original = datetime_original
-                    photo.set_photo_directory(file_name, file_path, dir_name, datetime_original)
+                    photo.set_photo_directory(file_name, file_path, dir_name)
                 if k == "DateTimeDigitized":
                     datetime_digitized = v.split(" ")[0].replace(":", "-") \
                             + " " + v.split(" ")[1]
@@ -100,7 +106,6 @@ def save_image(file_path, file_name, dir_name):
                 print("Error key number: " + str(key_number))
         
         photo.save()
-        photo.save_default_thumbnail_image()
     else:
         print("File already Exists")
 '''

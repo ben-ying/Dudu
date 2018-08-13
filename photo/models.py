@@ -13,7 +13,7 @@ from myproject.settings import BIRTHDAY
 from myproject.settings import PHOTO_DIR
 
 THUMBNAIL_DIR = "thumbnail"
-DEFAULT_THUMBNAIL_SIZE = 320
+DEFAULT_THUMBNAIL_SIZE = 160
 
 
 class Photo(models.Model):
@@ -32,6 +32,7 @@ class Photo(models.Model):
      # custom
     name = models.CharField('name', max_length=50)
     directory = models.CharField('directory', max_length=200)
+    age = models.CharField('age', max_length = 10)
     sha1sum = models.CharField('sha1sum', max_length=50)
     category = models.IntegerField('category', default = 0)
     version = models.IntegerField('version', default = 0)
@@ -42,16 +43,38 @@ class Photo(models.Model):
     def get_url(self):
         return os.path.join(self.directory, self.name)
 
-    def set_photo_directory(self, src_file_name, src_file_path, dest_dir_name, datetime_original):
-        photo_dir = os.path.join(MEDIA_ROOT, PHOTO_DIR, dest_dir_name)
-        delta = relativedelta(datetime.strptime(
-            datetime_original.split(" ")[0], '%Y-%m-%d'), 
+    def _get_delta(self):
+        return relativedelta(datetime.strptime(
+            str(self.exif_datetime_original).split(" ")[0], '%Y-%m-%d'),
             datetime.strptime(BIRTHDAY, '%Y-%m-%d'))
+
+    def get_age_description(self):
+        delta = self._get_delta()
+        description = ""
+
+        if delta.years > 0:
+            description += str(delta.years) + "年"
+        if delta.months > 0:
+            description += str(delta.months) + "个月"
+        if delta.days > 0:
+            description += str(delta.days) + "天"
+
+        if description:
+            return description
+        else:
+            return "出生日"
+
+
+    def set_photo_directory(self, src_file_name, src_file_path, dest_dir_name):
+        photo_dir = os.path.join(MEDIA_ROOT, PHOTO_DIR, dest_dir_name)
+        delta = self._get_delta()
 
         if delta.years == 0:
             dest_sub_dir = str(delta.months + 1) + "M"
         else:
             dest_sub_dir = str(delta.years + 1) + "Y"
+
+        self.age = dest_sub_dir
 
         img_dir = os.path.join(photo_dir, dest_sub_dir)
         os.makedirs(os.path.join(img_dir, THUMBNAIL_DIR), exist_ok=True)
@@ -66,7 +89,7 @@ class Photo(models.Model):
     def get_thumbnail_url(self):
         return os.path.join(self.get_thumbnail_directory(), self.name)
 
-    def save_thumbnail_image(self, height = DEFAULT_THUMBNAIL_SIZE, width = DEFAULT_THUMBNAIL_SIZE):
+    def _save_thumbnail_image(self, height = DEFAULT_THUMBNAIL_SIZE, width = DEFAULT_THUMBNAIL_SIZE):
         if os.path.exists(BASE_DIR + self.get_thumbnail_url()):
             print("File already exists")
             return
@@ -85,11 +108,11 @@ class Photo(models.Model):
         im.save(BASE_DIR + self.get_thumbnail_url(), "JPEG")
         im.close()
 
-    def save_default_thumbnail_image(self):
-        return self.save_thumbnail_image(DEFAULT_THUMBNAIL_SIZE, 0)
+    def _save_default_thumbnail_image(self):
+        return self._save_thumbnail_image(DEFAULT_THUMBNAIL_SIZE, 0)
 
     def save(self, *args, **kwargs):
-        self.save_default_thumbnail_image()
+        self._save_default_thumbnail_image()
         super(Photo, self).save(*args, **kwargs)
     
     def __str__(self):

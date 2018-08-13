@@ -2,8 +2,6 @@
 <html>
     <head>
         <link type="text/css" rel="stylesheet" href="{% static 'css/lightgallery.css' %}" /> 
-    </head>
-    <body>
         <!-- jQuery version must be >= 1.8.0; -->
         <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
 
@@ -15,16 +13,22 @@
         <!-- lightgallery plugins -->
         <script src="{% static 'js/lg-thumbnail.min.js' %}"></script>
         <script src="{% static 'js/lg-fullscreen.min.js' %}"></script>
-
-        {% if photos %}
-            {% for photo in photos %}
-            <div id="lightgallery">
-                <a href="{{ photo.get_url }}">
-                    <img src="{{ photo.get_thumbnail_url }}" />
-                </a>
-            </div>
+    </head>
+    <body>
+        <div id="lightgallery">
+        {% if photo_dict %}
+            {% for key, photos in photo_dict %}
+                <div>{{ key }}</div>
+                {% if photos %}
+                    {% for photo in photos %}
+                    <a href="{{ photo.get_url }}">
+                        <img src="{{ photo.get_thumbnail_url }}" />
+                    </a>
+                    {% endfor %}
+                {% endif %}
             {% endfor %}
         {% endif %}
+        </div>
 
         <script type="text/javascript">
             $(document).ready(function() {
@@ -32,4 +36,4 @@
             });
         </script>
     </body>
-    <html>
+<html>
