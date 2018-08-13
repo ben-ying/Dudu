@@ -4,19 +4,26 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from .models import Photo
+from myproject.settings import MEDIA_URL
 from myproject.settings import MEDIA_ROOT
 from myproject.settings import BIRTHDAY
 from myproject.settings import SOURCE_PHOTO_FOLDER
 from myproject.settings import PHOTO_DIR
-from myproject.settings import USER_DIR
 
 import os
 import PIL.Image
 import PIL.ExifTags
 import hashlib
 
+
 def index(request):
-    return render(request, 'index.html')
+    photos = Photo.objects.all()
+    context = {
+        'photos': photos,
+    }
+
+    return render(request, 'index.html', context)
+
 
 def classification(request):
     '''
@@ -42,13 +49,13 @@ def classification(request):
             file_path = os.path.join(root, file_name)
             if file_path.lower().endswith("jpg") \
                     or file_path.lower().endswith("jpeg"): 
-                saveImage(file_path, file_name)
+                saveImage(file_path, file_name, folder)
             else:
                 print("Error file format " + file_name.split(".")[-1])
 
     return HttpResponse("OK")
 
-def saveImage(file_path, file_name):
+def saveImage(file_path, file_name, folder):
     photo = Photo()
     photo.name = file_name
     hasher = hashlib.sha1()
@@ -86,7 +93,8 @@ def saveImage(file_path, file_name):
                     datetime_original = v.split(" ")[0].replace(":", "-") \
                             + " " + v.split(" ")[1]
                     photo.exif_datetime_original = datetime_original
-                    moveImage(file_name, file_path, datetime)
+                    url = moveImage(file_name, file_path, folder, datetime)
+                    photo.url = url
                 if k == "DateTimeDigitized":
                     datetime_digitized = v.split(" ")[0].replace(":", "-") \
                             + " " + v.split(" ")[1]
@@ -117,17 +125,20 @@ def saveImage(file_path, file_name):
             print("----------------------OK--------------------------")
 '''
 
-def moveImage(file_name, file_path, img_datetime):
-    photo_dir = os.path.join(MEDIA_ROOT, PHOTO_DIR, USER_DIR)
+def moveImage(file_name, file_path, folder, img_datetime):
+    photo_dir = os.path.join(MEDIA_ROOT, PHOTO_DIR, folder)
     delta = relativedelta(datetime.strptime(
         img_datetime.split(" ")[0], '%Y-%m-%d'), 
         datetime.strptime(BIRTHDAY, '%Y-%m-%d'))
 
     if delta.years == 0:
-        img_dir = os.path.join(photo_dir, str(delta.months + 1) + "M")
+        sub_dir = str(delta.months + 1) + "M"
     else:
-        img_dir = os.path.join(photo_dir, str(delta.years + 1) + "Y")
+        sub_dir = str(delta.years + 1) + "Y"
 
+    img_dir = os.path.join(photo_dir, sub_dir)
     os.makedirs(img_dir, exist_ok=True)
     os.rename(file_path, os.path.join(img_dir, file_name))
+
+    return os.path.join(MEDIA_URL, PHOTO_DIR, folder, img_dir, file_name)
 

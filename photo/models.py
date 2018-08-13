@@ -16,6 +16,7 @@ class Photo(models.Model):
     exif_datetime_digitized = models.DateTimeField('datetime digitized', blank=True, null=True)
      # custom
     name = models.CharField('name', max_length=50)
+    url = models.CharField('url', max_length=200)
     sha1sum = models.CharField('sha1sum', max_length=50)
     category = models.IntegerField('category', default = 0)
     description = models.CharField('description', max_length=1024, blank=True, null=True)

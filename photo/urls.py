@@ -11,4 +11,4 @@ app_name = 'photo'
 urlpatterns = [
     path('classification', classification, name='classification'),
     path('', index, name='index'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

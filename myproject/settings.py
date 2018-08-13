@@ -133,8 +133,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 PHOTO_DIR = 'photo'
 
-USER_DIR = 'dudu'
-
 BIRTHDAY = '2017-06-10'
 
 
