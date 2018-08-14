@@ -74,11 +74,12 @@
 
         // Current lightGallery element
         // Current jquery element
+        /*
         for (var i = 0; i < element.childElementCount; i++) {
             if (element.children[i].nodeName != "A") {
                 element.removeChild(element.children[i]);
             }
-        }
+        } */
         this.el = element;
         this.$el = $(element);
 

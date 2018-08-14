@@ -15,24 +15,28 @@
         <script src="{% static 'js/lg-fullscreen.js' %}"></script>
     </head>
     <body>
-        <div id="lightgallery">
         {% if photo_dict %}
             {% for key, photos in photo_dict %}
                 {% if photos %}
-                    <div>{{ key }}</div>
+                <div>{{key}}</div>
+                <div id="lightgallery{{key}}">
                     {% for photo in photos %}
                     <a href="{{ photo.get_url }}">
                         <img src="{{ photo.get_thumbnail_url }}" />
                     </a>
                     {% endfor %}
+                    </div>
                 {% endif %}
             {% endfor %}
         {% endif %}
-        </div>
 
         <script type="text/javascript">
             $(document).ready(function() {
-                $("#lightgallery").lightGallery(); 
+                {% for key, photos in photo_dict %}
+                    {% if photos %}
+                    $("#lightgallery{{key}}").lightGallery(); 
+                    {% endif %}
+                {% endfor %}
             });
         </script>
     </body>
