@@ -18,8 +18,8 @@
         <div id="lightgallery">
         {% if photo_dict %}
             {% for key, photos in photo_dict %}
-                <div style="display:none;">{{ key }}</div>
                 {% if photos %}
+                    <div>{{ key }}</div>
                     {% for photo in photos %}
                     <a href="{{ photo.get_url }}">
                         <img src="{{ photo.get_thumbnail_url }}" />
