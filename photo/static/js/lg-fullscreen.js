@@ -91,6 +91,7 @@
         });
 
         this.core.$outer.find('.lg-fullscreen').on('click.lg', function() {
+            // $(".lg-toogle-thumb").click();
             if (!document.fullscreenElement &&
                 !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
                 _this.requestFullscreen();

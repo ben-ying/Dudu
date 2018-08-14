@@ -735,6 +735,7 @@ body:not(.lg-from-hash) .lg-outer.lg-start-zoom .lg-item.lg-complete .lg-object 
 }
 .lg-outer #lg-share {
   position: relative;
+  display: none;
 }
 .lg-outer #lg-share:after {
   content: "\e80d";
