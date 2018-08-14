@@ -296,7 +296,7 @@
         template = '<div class="lg-outer ' + this.s.addClass + ' ' + this.s.startClass + '">' +
             '<div class="lg" style="width:' + this.s.width + '; height:' + this.s.height + '">' +
             '<div class="lg-inner">' + list + '</div>' +
-            '<div class="lg-toolbar lg-group">' +
+            '<div class="lg-toolbar lg-group" style="height: 48px;">' +
             '<span class="lg-close lg-icon"></span>' +
             '</div>' +
             controls +
@@ -463,6 +463,7 @@
     Plugin.prototype.counter = function() {
         if (this.s.counter) {
             $(this.s.appendCounterTo).append('<div id="lg-counter"><span id="lg-counter-current">' + (parseInt(this.index, 10) + 1) + '</span> / <span id="lg-counter-all">' + this.$items.length + '</span></div>');
+            $(this.s.appendCounterTo).append('<div id="lg-date"><span>' + this.$items[parseInt(this.index, 10)].id + ' (' + this.$items[parseInt(this.index, 10)].name + ')</span></div>');
         }
     };
 

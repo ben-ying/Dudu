@@ -21,7 +21,7 @@
                 <div>{{key}}</div>
                 <div id="lightgallery{{key}}">
                     {% for photo in photos %}
-                    <a href="{{ photo.get_url }}">
+                    <a id="{{photo.exif_datetime_original | date:'Y-m-d H:i:s'}}" name="{{photo.get_age_description}}" href="{{ photo.get_url }}">
                         <img src="{{ photo.get_thumbnail_url }}" />
                     </a>
                     {% endfor %}

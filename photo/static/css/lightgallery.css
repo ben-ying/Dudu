@@ -215,8 +215,17 @@
   display: inline-block;
   font-size: 16px;
   padding-left: 20px;
-  padding-top: 12px;
+  padding-top: 16px;
   vertical-align: middle;
+}
+
+#lg-date {
+  color: #999;
+  position: relative;
+  font-size: 16px;
+  top: -24px;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .lg-toolbar, .lg-prev, .lg-next {
