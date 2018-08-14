@@ -73,9 +73,13 @@
     function Plugin(element, options) {
 
         // Current lightGallery element
-        this.el = element;
-
         // Current jquery element
+        for (var i = 0; i < element.childElementCount; i++) {
+            if (element.children[i].nodeName != "A") {
+                element.removeChild(element.children[i]);
+            }
+        }
+        this.el = element;
         this.$el = $(element);
 
         // lightGallery settings
@@ -271,7 +275,9 @@
 
         // Create gallery items
         for (i = 0; i < this.$items.length; i++) {
-            list += '<div class="lg-item"></div>';
+            if (this.$items[i].nodeName == "A") {
+                list += '<div class="lg-item"></div>';
+            }
         }
 
         // Create controlls
@@ -753,7 +759,6 @@
     *   @param {String} direction - Direction of the slide(next/prev)
     */
     Plugin.prototype.slide = function(index, fromTouch, fromThumb, direction) {
-
         var _prevIndex = this.$outer.find('.lg-current').index();
         var _this = this;
 

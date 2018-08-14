@@ -150,6 +150,7 @@
         }
 
         function getThumb(src, thumb, index) {
+            if (!thumb) return;
             var isVideo = _this.core.isVideo(src, index) || {};
             var thumbImg;
             var vimeoId = '';
