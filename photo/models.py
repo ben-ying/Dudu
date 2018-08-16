@@ -5,6 +5,7 @@ from PIL import Image
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from shutil import copyfile
+from django.contrib.postgres.fields import ArrayField
 
 from myproject.settings import BASE_DIR
 from myproject.settings import MEDIA_URL
@@ -18,38 +19,44 @@ DEFAULT_THUMBNAIL_SIZE = 160
 
 class Photo(models.Model):
     # exif
-    exif_image_width = models.IntegerField('image width', blank=True, null=True)
-    exif_image_height = models.IntegerField('image height', blank=True, null=True)
+    exif_image_width = models.PositiveSmallIntegerField('image width', blank=True, null=True)
+    exif_image_height = models.PositiveSmallIntegerField('image height', blank=True, null=True)
     exif_make = models.CharField('make', max_length=50, blank=True, null=True)
     exif_model = models.CharField('model', max_length=100, blank=True, null=True)
     exif_lens_make = models.CharField('lens make', max_length=50, blank=True, null=True)
     exif_lens_model = models.CharField('lens model', max_length=100, blank=True, null=True)
     exif_version = models.CharField('exif version', max_length=10, blank=True, null=True)
     exif_subject_location = models.CharField('subject location', max_length=30, blank=True, null=True)
-    exif_datetime = models.DateTimeField('datetime', blank=True, null=True)
-    exif_datetime_original = models.DateTimeField('datetime original', blank=True, null=True)
-    exif_datetime_digitized = models.DateTimeField('datetime digitized', blank=True, null=True)
+    exif_datetime = models.DateField('datetime', blank=True, null=True)
+    exif_datetime_original = models.DateField('datetime original', blank=True, null=True)
+    exif_datetime_digitized = models.DateField('datetime digitized', blank=True, null=True)
      # custom
     name = models.CharField('name', max_length=50)
     directory = models.CharField('directory', max_length=200)
-    age = models.CharField('age', max_length = 10)
+    labels = ArrayField(models.CharField('label', max_length=50), blank=True, null=True)
+    sub_dir = models.CharField('sub_dir', max_length = 10)
+    duration = models.DurationField('duration')
     sha1sum = models.CharField('sha1sum', max_length=50)
-    category = models.IntegerField('category', default = 0)
-    version = models.IntegerField('version', default = 0)
-    description = models.CharField('description', max_length=1024, blank=True, null=True)
+    category = models.PositiveSmallIntegerField('category', default = 0)
+    version = models.PositiveSmallIntegerField('version', default = 0)
+    description = models.TextField('description', max_length=1024, blank=True, null=True)
     pub_date = models.DateTimeField('date published', auto_now_add=True)
     modify_date = models.DateTimeField('date modified', auto_now=True)
 
     def get_url(self):
         return os.path.join(self.directory, self.name)
 
-    def _get_delta(self):
+    def _get_relativedelta(self):
         return relativedelta(datetime.strptime(
-            str(self.exif_datetime_original).split(" ")[0], '%Y-%m-%d'),
+            str(self.exif_datetime_original), '%Y-%m-%d'),
             datetime.strptime(BIRTHDAY, '%Y-%m-%d'))
 
+    def _get_timedelta(self):
+        return datetime.strptime(str(self.exif_datetime_original), '%Y-%m-%d'), \
+            - datetime.strptime(BIRTHDAY, '%Y-%m-%d')
+
     def get_age_description(self):
-        delta = self._get_delta()
+        delta = self._get_relativedelta()
         description = ""
 
         if delta.years > 0:
@@ -67,14 +74,15 @@ class Photo(models.Model):
 
     def set_photo_directory(self, src_file_name, src_file_path, dest_dir_name):
         photo_dir = os.path.join(MEDIA_ROOT, PHOTO_DIR, dest_dir_name)
-        delta = self._get_delta()
+        delta = self._get_relativedelta()
+        self.duration = self._get_timedelta() 
 
         if delta.years == 0:
             dest_sub_dir = str(delta.months + 1) + "M"
         else:
             dest_sub_dir = str(delta.years + 1) + "Y"
 
-        self.age = dest_sub_dir
+        self.sub_dir = dest_sub_dir
 
         img_dir = os.path.join(photo_dir, dest_sub_dir)
         os.makedirs(os.path.join(img_dir, THUMBNAIL_DIR), exist_ok=True)

@@ -11,19 +11,25 @@ from .models import Photo
 from .models import THUMBNAIL_DIR
 from myproject.settings import SOURCE_PHOTO_FOLDER
 
-
 def index(request):
+    return HttpResponse("Not finished")
+
+def user_gallery(request, pk):
+    # todo modify
+    return child_gallery(request, pk)
+
+def child_gallery(request, pk):
     photo_dict = defaultdict(list)
     photos = Photo.objects.all().order_by('exif_datetime_original')
 
     for photo in photos:
-        photo_dict[photo.age.replace("M", "个月").replace("Y", "岁")].append(photo)
+        photo_dict[photo.sub_dir.replace("M", "个月").replace("Y", "岁")].append(photo)
 
     context = {
         'photo_dict': photo_dict.items(),
     }
 
-    return render(request, 'index.html', context)
+    return render(request, 'child_gallery.html', context)
 
 
 def classification(request):
@@ -71,37 +77,37 @@ def save_image(file_path, file_name, dir_name):
             if key_number in PIL.ExifTags.TAGS:
                 # rstrip fix this error:
                 # A string literal cannot contain NUL (0x00) characters
-                v = str(v).rstrip(' \t\r\n\0')
-                k = PIL.ExifTags.TAGS[key_number]
-                if k == "ExifImageWidth":
-                    photo.exif_image_width = v
-                if k == "ExifImageHeight":
-                    photo.exif_image_height = v
-                if k == "Make":
-                    photo.exif_make = v
-                if k == "Model":
-                    photo.exif_model = v
-                if k == "LensMake":
-                    photo.exif_lens_make = v
-                if k == "LensModel":
-                    photo.exif_lens_model = v
-                if k == "ExifVersion":
-                    photo.exif_version = v
-                if k == "SubjectLocation":
-                    photo.exif_subject_location = v
-                if k == "DateTime":
-                    datetime = v.split(" ")[0].replace(":", "-") \
-                            + " " + v.split(" ")[1]
-                    photo.exif_datetime = datetime
-                if k == "DateTimeOriginal":
-                    datetime_original = v.split(" ")[0].replace(":", "-") \
-                            + " " + v.split(" ")[1]
-                    photo.exif_datetime_original = datetime_original
-                    photo.set_photo_directory(file_name, file_path, dir_name)
-                if k == "DateTimeDigitized":
-                    datetime_digitized = v.split(" ")[0].replace(":", "-") \
-                            + " " + v.split(" ")[1]
-                    photo.exif_datetime_digitized = datetime_digitized
+                try:
+                    v = str(v).rstrip(' \t\r\n\0')
+                    k = PIL.ExifTags.TAGS[key_number]
+                    if k == "ExifImageWidth":
+                        photo.exif_image_width = v
+                    if k == "ExifImageHeight":
+                        photo.exif_image_height = v
+                    if k == "Make":
+                        photo.exif_make = v
+                    if k == "Model":
+                        photo.exif_model = v
+                    if k == "LensMake":
+                        photo.exif_lens_make = v
+                    if k == "LensModel":
+                        photo.exif_lens_model = v
+                    if k == "ExifVersion":
+                        photo.exif_version = v
+                    if k == "SubjectLocation":
+                        photo.exif_subject_location = v
+                    if k == "DateTime":
+                        datetime = v.split(" ")[0].replace(":", "-")
+                        photo.exif_datetime = datetime
+                    if k == "DateTimeOriginal":
+                        datetime_original = v.split(" ")[0].replace(":", "-")
+                        photo.exif_datetime_original = datetime_original
+                        photo.set_photo_directory(file_name, file_path, dir_name)
+                    if k == "DateTimeDigitized":
+                        datetime_digitized = v.split(" ")[0].replace(":", "-")
+                        photo.exif_datetime_digitized = datetime_digitized
+                except Exception as e:
+                    print("------------------Error----------------------" + str(e))
             else:
                 print("Error key number: " + str(key_number))
         
