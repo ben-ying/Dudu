@@ -10,12 +10,34 @@ from django.contrib.postgres.fields import ArrayField
 from myproject.settings import BASE_DIR
 from myproject.settings import MEDIA_URL
 from myproject.settings import MEDIA_ROOT
-from myproject.settings import BIRTHDAY
 from myproject.settings import PHOTO_DIR
 
 THUMBNAIL_DIR = "thumbnail"
 DEFAULT_THUMBNAIL_SIZE = 160
 
+class User(models.Model):
+    auth_user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
+    phone = models.CharField(max_length=30, blank=True, null=True)
+    gender = models.IntegerField(default=2) #0 for boy, 1 for girl, 2 for others
+    profile = models.CharField(max_length=200, blank=True, null=True)
+    user_type = models.IntegerField(default=0)
+    region = models.CharField(max_length=100, blank=True, null=True)
+    locale = models.CharField(max_length=10, blank=True, null=True)
+    whats_up = models.CharField(max_length=200, blank=True, null=True)
+    zone = models.CharField(max_length=50, blank=True, null=True)
+    birthday = models.DateTimeField(blank=True, null=True)
+    hobbies = models.TextField(max_length=500, blank=True, null=True)
+    highlighted = models.TextField(blank=True, null=True)
+    created = models.DateTimeField(editable=False, blank=True, null=True)
+    modified = models.DateTimeField(auto_now=True, blank=True, null=True)
+    is_email_activate = models.BooleanField(default=False)
+    is_phone_activate = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.auth_user.username
+
+    def save(self, *args, **kwargs):
+        super(User, self).save(*args, **kwargs)
 
 class Photo(models.Model):
     # exif
@@ -30,7 +52,8 @@ class Photo(models.Model):
     exif_datetime = models.DateField('datetime', blank=True, null=True)
     exif_datetime_original = models.DateField('datetime original', blank=True, null=True)
     exif_datetime_digitized = models.DateField('datetime digitized', blank=True, null=True)
-     # custom
+    # custom
+    user = models.ForeignKey(User, verbose_name='user', related_name='photos', blank=True, null=True, on_delete=models.CASCADE)
     name = models.CharField('name', max_length=50)
     directory = models.CharField('directory', max_length=200)
     labels = ArrayField(models.CharField('label', max_length=50), blank=True, null=True)
@@ -48,12 +71,11 @@ class Photo(models.Model):
 
     def _get_relativedelta(self):
         return relativedelta(datetime.strptime(
-            str(self.exif_datetime_original), '%Y-%m-%d'),
-            datetime.strptime(BIRTHDAY, '%Y-%m-%d'))
+            str(self.exif_datetime_original), '%Y-%m-%d'), self.user.birthday)
 
     def _get_timedelta(self):
-        return datetime.strptime(str(self.exif_datetime_original), '%Y-%m-%d'), \
-            - datetime.strptime(BIRTHDAY, '%Y-%m-%d')
+        return datetime.strptime(str(self.exif_datetime_original), '%Y-%m-%d') \
+            - self.user.birthday
 
     def get_age_description(self):
         delta = self._get_relativedelta()
@@ -86,6 +108,7 @@ class Photo(models.Model):
 
         img_dir = os.path.join(photo_dir, dest_sub_dir)
         os.makedirs(os.path.join(img_dir, THUMBNAIL_DIR), exist_ok=True)
+        # todo 
         #os.rename(src_file_path, os.path.join(img_dir, src_file_name))
         copyfile(src_file_path, os.path.join(img_dir, src_file_name))
         self.directory = os.path.join(MEDIA_URL, PHOTO_DIR, dest_dir_name, dest_sub_dir)

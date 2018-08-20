@@ -2,14 +2,18 @@ import os
 import PIL.Image
 import PIL.ExifTags
 import hashlib
+import shutil
 
 from django.shortcuts import render
 from django.http import HttpResponse
 from collections import defaultdict
 
 from .models import Photo
+from .models import User
 from .models import THUMBNAIL_DIR
 from myproject.settings import SOURCE_PHOTO_FOLDER
+from myproject.settings import MEDIA_ROOT
+from myproject.settings import PHOTO_DIR
 
 def index(request):
     return HttpResponse("Not finished")
@@ -32,6 +36,12 @@ def child_gallery(request, pk):
     return render(request, 'child_gallery.html', context)
 
 
+def reset(request):
+    Photo.objects.all().delete()
+    shutil.rmtree(os.path.join(MEDIA_ROOT, PHOTO_DIR))
+    return HttpResponse("RESET")
+
+
 def classification(request):
     '''
     for p in Photo.objects.all():
@@ -39,16 +49,16 @@ def classification(request):
 
     return HttpResponse("OK")
     '''
-    dir_name = request.GET.get("dir", "")
-    print("dir_name: " + dir_name)
-    if not dir_name:
-        return HttpResponse("Error")
+    username = request.GET.get("username", "")
+    print("username: " + username)
+    if not username or not User.objects.filter(auth_user__username = username):
+        return HttpResponse("User not exists")
 
-    if not os.path.isdir(os.path.join(SOURCE_PHOTO_FOLDER, dir_name)):
+    if not os.path.isdir(os.path.join(SOURCE_PHOTO_FOLDER, username)):
         return HttpResponse("Dir not exists")
 
     n = 0
-    for root, directories, files in os.walk(os.path.join(SOURCE_PHOTO_FOLDER, dir_name)):
+    for root, directories, files in os.walk(os.path.join(SOURCE_PHOTO_FOLDER, username)):
         total = len(files)
         for file_name in files:
             n += 1
@@ -56,14 +66,16 @@ def classification(request):
             file_path = os.path.join(root, file_name)
             if file_path.lower().endswith("jpg") \
                     or file_path.lower().endswith("jpeg"): 
-                save_image(file_path, file_name, dir_name)
+                save_image(file_path, file_name, username)
             else:
                 print("Error file format " + file_name.split(".")[-1])
 
     return HttpResponse("OK")
 
-def save_image(file_path, file_name, dir_name):
+def save_image(file_path, file_name, username):
+    user = User.objects.get(auth_user__username = username)
     photo = Photo()
+    photo.user = user
     photo.name = file_name
     hasher = hashlib.sha1()
     with open(file_path, 'rb') as afile:
@@ -102,7 +114,7 @@ def save_image(file_path, file_name, dir_name):
                     if k == "DateTimeOriginal":
                         datetime_original = v.split(" ")[0].replace(":", "-")
                         photo.exif_datetime_original = datetime_original
-                        photo.set_photo_directory(file_name, file_path, dir_name)
+                        photo.set_photo_directory(file_name, file_path, username)
                     if k == "DateTimeDigitized":
                         datetime_digitized = v.split(" ")[0].replace(":", "-")
                         photo.exif_datetime_digitized = datetime_digitized
