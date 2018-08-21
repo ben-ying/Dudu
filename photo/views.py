@@ -18,41 +18,45 @@ from myproject.settings import PHOTO_DIR
 def index(request):
     return HttpResponse("Not finished")
 
-def user_gallery(request, pk):
-    # todo modify
-    return child_gallery(request, pk)
+def users(request):
+    context = {
+        'users': User.objects.all(),
+    }
 
-def child_gallery(request, pk):
+    return render(request, 'users.html', context)
+
+def user_gallery(request, user_id):
     photo_dict = defaultdict(list)
-    photos = Photo.objects.all().order_by('exif_datetime_original')
+    photos = Photo.objects.filter(user__id = user_id).order_by('exif_datetime_original')
 
     for photo in photos:
-        photo_dict[photo.sub_dir.replace("M", "个月").replace("Y", "岁")].append(photo)
+        photo_dict[photo.get_sub_dir_description()].append(photo)
 
     context = {
         'photo_dict': photo_dict.items(),
     }
 
-    return render(request, 'child_gallery.html', context)
+    return render(request, 'user_gallery.html', context)
 
 
-def reset(request):
-    Photo.objects.all().delete()
-    shutil.rmtree(os.path.join(MEDIA_ROOT, PHOTO_DIR))
+def reset(request, user_id):
+    if not User.objects.filter(id = user_id):
+        return HttpResponse("User not exists")
+
+    Photo.objects.filter(user__id = user_id).delete()
+
+    if not os.path.isdir(os.path.join(MEDIA_ROOT, PHOTO_DIR, User.objects.get(id = user_id).auth_user.username)):
+        return HttpResponse("Already Reset")
+
+    shutil.rmtree(os.path.join(MEDIA_ROOT, PHOTO_DIR, User.objects.get(id = user_id).auth_user.username))
     return HttpResponse("RESET")
 
 
-def classification(request):
-    '''
-    for p in Photo.objects.all():
-        p.delete()
-
-    return HttpResponse("OK")
-    '''
-    username = request.GET.get("username", "")
-    print("username: " + username)
-    if not username or not User.objects.filter(auth_user__username = username):
+def classification(request, user_id):
+    if not User.objects.filter(id = user_id):
         return HttpResponse("User not exists")
+
+    username = User.objects.get(id = user_id).auth_user.username
 
     if not os.path.isdir(os.path.join(SOURCE_PHOTO_FOLDER, username)):
         return HttpResponse("Dir not exists")

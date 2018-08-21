@@ -18,9 +18,9 @@ DEFAULT_THUMBNAIL_SIZE = 160
 class User(models.Model):
     auth_user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
     phone = models.CharField(max_length=30, blank=True, null=True)
-    gender = models.IntegerField(default=2) #0 for boy, 1 for girl, 2 for others
+    gender = models.PositiveSmallIntegerField(default=2) #0 for boy, 1 for girl, 2 for others
     profile = models.CharField(max_length=200, blank=True, null=True)
-    user_type = models.IntegerField(default=0)
+    user_type = models.PositiveSmallIntegerField(default=0)
     region = models.CharField(max_length=100, blank=True, null=True)
     locale = models.CharField(max_length=10, blank=True, null=True)
     whats_up = models.CharField(max_length=200, blank=True, null=True)
@@ -33,11 +33,11 @@ class User(models.Model):
     is_email_activate = models.BooleanField(default=False)
     is_phone_activate = models.BooleanField(default=False)
 
-    def __str__(self):
-        return self.auth_user.username
-
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.auth_user.username
 
 class Photo(models.Model):
     # exif
@@ -66,17 +66,6 @@ class Photo(models.Model):
     pub_date = models.DateTimeField('date published', auto_now_add=True)
     modify_date = models.DateTimeField('date modified', auto_now=True)
 
-    def get_url(self):
-        return os.path.join(self.directory, self.name)
-
-    def _get_relativedelta(self):
-        return relativedelta(datetime.strptime(
-            str(self.exif_datetime_original), '%Y-%m-%d'), self.user.birthday)
-
-    def _get_timedelta(self):
-        return datetime.strptime(str(self.exif_datetime_original), '%Y-%m-%d') \
-            - self.user.birthday
-
     def get_age_description(self):
         delta = self._get_relativedelta()
         description = ""
@@ -93,6 +82,17 @@ class Photo(models.Model):
         else:
             return "出生日"
 
+    def get_sub_dir_description(self):
+        return self.sub_dir.replace("M", "个月").replace("Y", "岁")
+
+    def get_url(self):
+        return os.path.join(self.directory, self.name)
+
+    def get_thumbnail_directory(self):
+        return os.path.join(self.directory, THUMBNAIL_DIR)
+
+    def get_thumbnail_url(self):
+        return os.path.join(self.get_thumbnail_directory(), self.name)
 
     def set_photo_directory(self, src_file_name, src_file_path, dest_dir_name):
         photo_dir = os.path.join(MEDIA_ROOT, PHOTO_DIR, dest_dir_name)
@@ -113,12 +113,17 @@ class Photo(models.Model):
         copyfile(src_file_path, os.path.join(img_dir, src_file_name))
         self.directory = os.path.join(MEDIA_URL, PHOTO_DIR, dest_dir_name, dest_sub_dir)
 
+    def save(self, *args, **kwargs):
+        self._save_default_thumbnail_image()
+        super(Photo, self).save(*args, **kwargs)
+    
+    def _get_relativedelta(self):
+        return relativedelta(datetime.strptime(
+            str(self.exif_datetime_original), '%Y-%m-%d'), self.user.birthday)
 
-    def get_thumbnail_directory(self):
-        return os.path.join(self.directory, THUMBNAIL_DIR)
-
-    def get_thumbnail_url(self):
-        return os.path.join(self.get_thumbnail_directory(), self.name)
+    def _get_timedelta(self):
+        return datetime.strptime(str(self.exif_datetime_original), '%Y-%m-%d') \
+            - self.user.birthday
 
     def _save_thumbnail_image(self, height = DEFAULT_THUMBNAIL_SIZE, width = DEFAULT_THUMBNAIL_SIZE):
         if os.path.exists(BASE_DIR + self.get_thumbnail_url()):
@@ -142,10 +147,6 @@ class Photo(models.Model):
     def _save_default_thumbnail_image(self):
         return self._save_thumbnail_image(DEFAULT_THUMBNAIL_SIZE, 0)
 
-    def save(self, *args, **kwargs):
-        self._save_default_thumbnail_image()
-        super(Photo, self).save(*args, **kwargs)
-    
     def __str__(self):
         return self.name
 

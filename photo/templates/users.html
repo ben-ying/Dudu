@@ -1,0 +1,23 @@
+
+{% load static %}
+<html>
+    <head>
+    </head>
+    <body>
+        {% if users %}
+            {% for user in users %}
+            <li>
+                <a href="{% url 'photo:user-gallery' user.id%}">
+                    {{user.auth_user.username}}
+                </a>
+                <a href="{% url 'photo:classification' user.id %}">
+                    classification
+                </a>
+                <a href="{% url 'photo:reset' user.id %}">
+                    reset
+                </a>
+            </li>
+            {% endfor %}
+        {% endif %}
+    </body>
+<html>

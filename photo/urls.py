@@ -6,18 +6,16 @@ from django.conf import settings
 from .views import classification
 from .views import index
 from .views import reset
-from .views import child_gallery
+from .views import users
 from .views import user_gallery
 
 
 app_name = 'photo'
 urlpatterns = [
     # todo remove after debug
-    path('reset', reset, name='classification'),
-    path('classification', classification, name='classification'),
-    # type 0
-    url(r'^children/(?P<pk>[0-9]+)$', child_gallery, name='child-gallery'),
-    # type 1
-    url(r'^users/(?P<pk>[0-9]+)$', user_gallery, name='user-gallery'),
     # path('', index, name='index'),
+    path('users', users, name='users'),
+    path('reset/<int:user_id>', reset, name='reset'),
+    path('classification/<int:user_id>', classification, name='classification'),
+    path('users/<int:user_id>', user_gallery, name='user-gallery'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
