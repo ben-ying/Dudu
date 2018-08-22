@@ -14,6 +14,7 @@ from .models import User
 from .models import THUMBNAIL_DIR
 from myproject.settings import SOURCE_PHOTO_FOLDER
 from myproject.settings import MEDIA_ROOT
+from myproject.settings import MEDIA_URL
 from myproject.settings import PHOTO_DIR
 
 def index(request):
@@ -44,8 +45,9 @@ def reset(request, user_id):
     if not User.objects.filter(id = user_id):
         return HttpResponse("User not exists")
 
-    print("path: " + os.path.join(MEDIA_ROOT, PHOTO_DIR))
-    for root, directories, files in os.walk(os.path.join(MEDIA_ROOT, PHOTO_DIR)):
+    photo_abs_dir = os.path.abspath(os.path.dirname(__file__)) + os.path.join(MEDIA_URL, PHOTO_DIR)
+    print("photo_abs_dir: " + photo_abs_dir)
+    for root, directories, files in os.walk(photo_abs_dir):
         if os.path.basename(root) != THUMBNAIL_DIR:
             for f in files:
                 print("from: " + os.path.join(root, f) + ", to: " \
@@ -55,10 +57,11 @@ def reset(request, user_id):
 
     Photo.objects.filter(user__id = user_id).delete()
 
-    if not os.path.isdir(os.path.join(MEDIA_ROOT, PHOTO_DIR, User.objects.get(id = user_id).auth_user.username)):
+    user_photo_dir = os.path.join(photo_abs_dir, User.objects.get(id = user_id).auth_user.username)
+    if not os.path.isdir(user_photo_dir):
         return HttpResponse("Already Reset")
 
-    shutil.rmtree(os.path.join(MEDIA_ROOT, PHOTO_DIR, User.objects.get(id = user_id).auth_user.username))
+    shutil.rmtree(user_photo_dir)
     return HttpResponse("RESET")
 
 

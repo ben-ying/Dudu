@@ -1,4 +1,5 @@
 import os
+import pdb
 
 from django.db import models
 from PIL import Image
@@ -7,9 +8,7 @@ from datetime import datetime
 from shutil import copyfile
 from django.contrib.postgres.fields import ArrayField
 
-from myproject.settings import BASE_DIR
 from myproject.settings import MEDIA_URL
-from myproject.settings import MEDIA_ROOT
 from myproject.settings import PHOTO_DIR
 
 THUMBNAIL_DIR = "thumbnail"
@@ -95,7 +94,8 @@ class Photo(models.Model):
         return os.path.join(self.get_thumbnail_directory(), self.name)
 
     def set_photo_directory(self, src_file_name, src_file_path, dest_dir_name):
-        photo_dir = os.path.join(MEDIA_ROOT, PHOTO_DIR, dest_dir_name)
+        photo_dir = os.path.abspath(os.path.dirname(__file__)) + \
+                os.path.join(MEDIA_URL, PHOTO_DIR, dest_dir_name)
         delta = self._get_relativedelta()
         self.duration = self._get_timedelta() 
 
@@ -125,7 +125,8 @@ class Photo(models.Model):
             - self.user.birthday
 
     def _save_thumbnail_image(self, height = DEFAULT_THUMBNAIL_SIZE, width = DEFAULT_THUMBNAIL_SIZE):
-        if os.path.exists(BASE_DIR + self.get_thumbnail_url()):
+        current_dir = os.path.abspath(os.path.dirname(__file__))
+        if os.path.exists(current_dir + self.get_thumbnail_url()):
             print("File already exists")
             return
 
@@ -138,9 +139,9 @@ class Photo(models.Model):
 
         url = self.get_url()
         size = int(width), int(height) 
-        im = Image.open(BASE_DIR + self.get_url())
+        im = Image.open(current_dir + self.get_url())
         im.thumbnail(size, Image.ANTIALIAS)
-        im.save(BASE_DIR + self.get_thumbnail_url(), "JPEG")
+        im.save(current_dir + self.get_thumbnail_url(), "JPEG")
         im.close()
 
     def _save_default_thumbnail_image(self):
