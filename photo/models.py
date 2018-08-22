@@ -108,9 +108,8 @@ class Photo(models.Model):
 
         img_dir = os.path.join(photo_dir, dest_sub_dir)
         os.makedirs(os.path.join(img_dir, THUMBNAIL_DIR), exist_ok=True)
-        # todo 
-        #os.rename(src_file_path, os.path.join(img_dir, src_file_name))
-        copyfile(src_file_path, os.path.join(img_dir, src_file_name))
+        os.rename(src_file_path, os.path.join(img_dir, src_file_name))
+        #copyfile(src_file_path, os.path.join(img_dir, src_file_name))
         self.directory = os.path.join(MEDIA_URL, PHOTO_DIR, dest_dir_name, dest_sub_dir)
 
     def save(self, *args, **kwargs):

@@ -3,6 +3,7 @@ import PIL.Image
 import PIL.ExifTags
 import hashlib
 import shutil
+import pdb
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -42,6 +43,15 @@ def user_gallery(request, user_id):
 def reset(request, user_id):
     if not User.objects.filter(id = user_id):
         return HttpResponse("User not exists")
+
+    print("path: " + os.path.join(MEDIA_ROOT, PHOTO_DIR))
+    for root, directories, files in os.walk(os.path.join(MEDIA_ROOT, PHOTO_DIR)):
+        if os.path.basename(root) != THUMBNAIL_DIR:
+            for f in files:
+                print("from: " + os.path.join(root, f) + ", to: " \
+                        + os.path.join(SOURCE_PHOTO_FOLDER, os.path.basename(os.path.dirname(root)), f))
+                os.rename(os.path.join(root, f), \
+                        os.path.join(SOURCE_PHOTO_FOLDER, os.path.basename(os.path.dirname(root)), f))
 
     Photo.objects.filter(user__id = user_id).delete()
 
