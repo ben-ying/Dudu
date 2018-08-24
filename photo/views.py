@@ -3,19 +3,21 @@ import PIL.Image
 import PIL.ExifTags
 import hashlib
 import shutil
+import photo
 import pdb
 
 from django.shortcuts import render
 from django.http import HttpResponse
 from collections import defaultdict
 
-from .models import Photo
-from .models import User
-from .models import THUMBNAIL_DIR
+from .models.photo_model import Photo
+from .models.photo_model import THUMBNAIL_DIR
+from .models.user_model import User
 from myproject.settings import SOURCE_PHOTO_FOLDER
 from myproject.settings import MEDIA_ROOT
 from myproject.settings import MEDIA_URL
-from myproject.settings import PHOTO_DIR
+from myproject.settings import PHOTO_APP_MEDIA_ROOT
+
 
 def index(request):
     return HttpResponse("Not finished")
@@ -45,9 +47,7 @@ def reset(request, user_id):
     if not User.objects.filter(id = user_id):
         return HttpResponse("User not exists")
 
-    photo_abs_dir = os.path.abspath(os.path.dirname(__file__)) + os.path.join(MEDIA_URL, PHOTO_DIR)
-    print("photo_abs_dir: " + photo_abs_dir)
-    for root, directories, files in os.walk(photo_abs_dir):
+    for root, directories, files in os.walk(PHOTO_APP_MEDIA_ROOT):
         if os.path.basename(root) != THUMBNAIL_DIR:
             for f in files:
                 print("from: " + os.path.join(root, f) + ", to: " \
@@ -57,7 +57,7 @@ def reset(request, user_id):
 
     Photo.objects.filter(user__id = user_id).delete()
 
-    user_photo_dir = os.path.join(photo_abs_dir, User.objects.get(id = user_id).auth_user.username)
+    user_photo_dir = os.path.join(PHOTO_APP_MEDIA_ROOT, User.objects.get(id = user_id).auth_user.username)
     if not os.path.isdir(user_photo_dir):
         return HttpResponse("Already Reset")
 
@@ -131,7 +131,7 @@ def save_image(file_path, file_name, username):
                     if k == "DateTimeOriginal":
                         datetime_original = v.split(" ")[0].replace(":", "-")
                         photo.exif_datetime_original = datetime_original
-                        photo.set_photo_directory(file_name, file_path, username)
+                        photo.classification(file_name, file_path)
                     if k == "DateTimeDigitized":
                         datetime_digitized = v.split(" ")[0].replace(":", "-")
                         photo.exif_datetime_digitized = datetime_digitized

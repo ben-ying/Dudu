@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import photo
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -131,7 +132,8 @@ MEDIA_URL = '/media/'
 SOURCE_PHOTO_FOLDER = '/home/ben/Pictures'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
-PHOTO_DIR = 'photo'
+PHOTO_APP_MEDIA_ROOT = os.path.join('photo', 'media', 'photo')
+PHOTO_APP_MEDIA_URL = os.path.join('/photo/', 'media', 'photo')
 
 
 

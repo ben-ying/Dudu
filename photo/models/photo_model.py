@@ -1,5 +1,6 @@
 import os
 import pdb
+import photo
 
 from django.db import models
 from PIL import Image
@@ -8,53 +9,19 @@ from datetime import datetime
 from shutil import copyfile
 from django.contrib.postgres.fields import ArrayField
 
+from .abstract_model import Exif
+from .user_model import User
 from myproject.settings import MEDIA_URL
-from myproject.settings import PHOTO_DIR
+from myproject.settings import PHOTO_APP_MEDIA_URL
+from myproject.settings import PHOTO_APP_MEDIA_ROOT
 
 THUMBNAIL_DIR = "thumbnail"
 DEFAULT_THUMBNAIL_SIZE = 160
 
-class User(models.Model):
-    auth_user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
-    phone = models.CharField(max_length=30, blank=True, null=True)
-    gender = models.PositiveSmallIntegerField(default=2) #0 for boy, 1 for girl, 2 for others
-    profile = models.CharField(max_length=200, blank=True, null=True)
-    user_type = models.PositiveSmallIntegerField(default=0)
-    region = models.CharField(max_length=100, blank=True, null=True)
-    locale = models.CharField(max_length=10, blank=True, null=True)
-    whats_up = models.CharField(max_length=200, blank=True, null=True)
-    zone = models.CharField(max_length=50, blank=True, null=True)
-    birthday = models.DateTimeField(blank=True, null=True)
-    hobbies = models.TextField(max_length=500, blank=True, null=True)
-    highlighted = models.TextField(blank=True, null=True)
-    created = models.DateTimeField(editable=False, blank=True, null=True)
-    modified = models.DateTimeField(auto_now=True, blank=True, null=True)
-    is_email_activate = models.BooleanField(default=False)
-    is_phone_activate = models.BooleanField(default=False)
 
-    def save(self, *args, **kwargs):
-        super(User, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return self.auth_user.username
-
-class Photo(models.Model):
-    # exif
-    exif_image_width = models.PositiveSmallIntegerField('image width', blank=True, null=True)
-    exif_image_height = models.PositiveSmallIntegerField('image height', blank=True, null=True)
-    exif_make = models.CharField('make', max_length=50, blank=True, null=True)
-    exif_model = models.CharField('model', max_length=100, blank=True, null=True)
-    exif_lens_make = models.CharField('lens make', max_length=50, blank=True, null=True)
-    exif_lens_model = models.CharField('lens model', max_length=100, blank=True, null=True)
-    exif_version = models.CharField('exif version', max_length=10, blank=True, null=True)
-    exif_subject_location = models.CharField('subject location', max_length=30, blank=True, null=True)
-    exif_datetime = models.DateField('datetime', blank=True, null=True)
-    exif_datetime_original = models.DateField('datetime original', blank=True, null=True)
-    exif_datetime_digitized = models.DateField('datetime digitized', blank=True, null=True)
-    # custom
+class Photo(Exif):
     user = models.ForeignKey(User, verbose_name='user', related_name='photos', blank=True, null=True, on_delete=models.CASCADE)
     name = models.CharField('name', max_length=50)
-    directory = models.CharField('directory', max_length=200)
     labels = ArrayField(models.CharField('label', max_length=50), blank=True, null=True)
     sub_dir = models.CharField('sub_dir', max_length = 10)
     duration = models.DurationField('duration')
@@ -64,6 +31,12 @@ class Photo(models.Model):
     description = models.TextField('description', max_length=1024, blank=True, null=True)
     pub_date = models.DateTimeField('date published', auto_now_add=True)
     modify_date = models.DateTimeField('date modified', auto_now=True)
+
+    def get_username(self):
+        if self.user:
+            return self.user.auth_user.username
+        else:
+            return 'anonymous'
 
     def get_age_description(self):
         delta = self._get_relativedelta()
@@ -84,18 +57,22 @@ class Photo(models.Model):
     def get_sub_dir_description(self):
         return self.sub_dir.replace("M", "个月").replace("Y", "岁")
 
-    def get_url(self):
-        return os.path.join(self.directory, self.name)
+    def get_image_directory(self):
+        return os.path.join(PHOTO_APP_MEDIA_ROOT, self.get_username(), self.sub_dir)
+
+    def get_image_url(self):
+        return os.path.join(PHOTO_APP_MEDIA_URL, self.get_username(), self.sub_dir, self.name)
 
     def get_thumbnail_directory(self):
-        return os.path.join(self.directory, THUMBNAIL_DIR)
+        return os.path.join(PHOTO_APP_MEDIA_ROOT, self.get_username(), self.sub_dir, THUMBNAIL_DIR)
 
     def get_thumbnail_url(self):
+        return os.path.join(PHOTO_APP_MEDIA_URL, self.get_username(), self.sub_dir, THUMBNAIL_DIR, self.name)
+
+    def get_thumbnail_image_path(self):
         return os.path.join(self.get_thumbnail_directory(), self.name)
 
-    def set_photo_directory(self, src_file_name, src_file_path, dest_dir_name):
-        photo_dir = os.path.abspath(os.path.dirname(__file__)) + \
-                os.path.join(MEDIA_URL, PHOTO_DIR, dest_dir_name)
+    def classification(self, src_file_name, src_file_path):
         delta = self._get_relativedelta()
         self.duration = self._get_timedelta() 
 
@@ -106,11 +83,9 @@ class Photo(models.Model):
 
         self.sub_dir = dest_sub_dir
 
-        img_dir = os.path.join(photo_dir, dest_sub_dir)
+        img_dir = os.path.join(PHOTO_APP_MEDIA_ROOT, self.user.auth_user.username, dest_sub_dir)
         os.makedirs(os.path.join(img_dir, THUMBNAIL_DIR), exist_ok=True)
         os.rename(src_file_path, os.path.join(img_dir, src_file_name))
-        #copyfile(src_file_path, os.path.join(img_dir, src_file_name))
-        self.directory = os.path.join(MEDIA_URL, PHOTO_DIR, dest_dir_name, dest_sub_dir)
 
     def save(self, *args, **kwargs):
         self._save_default_thumbnail_image()
@@ -121,12 +96,13 @@ class Photo(models.Model):
             str(self.exif_datetime_original), '%Y-%m-%d'), self.user.birthday)
 
     def _get_timedelta(self):
+        if self.user.birthday:
+            print("User not set birthday")
         return datetime.strptime(str(self.exif_datetime_original), '%Y-%m-%d') \
             - self.user.birthday
 
     def _save_thumbnail_image(self, height = DEFAULT_THUMBNAIL_SIZE, width = DEFAULT_THUMBNAIL_SIZE):
-        current_dir = os.path.abspath(os.path.dirname(__file__))
-        if os.path.exists(current_dir + self.get_thumbnail_url()):
+        if os.path.exists(self.get_thumbnail_image_path()):
             print("File already exists")
             return
 
@@ -137,11 +113,10 @@ class Photo(models.Model):
             rate = float(self.exif_image_width) / width
             height = float(self.exif_image_height) / rate
 
-        url = self.get_url()
         size = int(width), int(height) 
-        im = Image.open(current_dir + self.get_url())
+        im = Image.open(os.path.join(PHOTO_APP_MEDIA_ROOT, self.get_username(), self.sub_dir, self.name))
         im.thumbnail(size, Image.ANTIALIAS)
-        im.save(current_dir + self.get_thumbnail_url(), "JPEG")
+        im.save(self.get_thumbnail_image_path(), "JPEG")
         im.close()
 
     def _save_default_thumbnail_image(self):
