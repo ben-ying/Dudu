@@ -109,3 +109,4 @@ media/
 photo/migrations/
 static/
 logs/
+myproject/settings.py

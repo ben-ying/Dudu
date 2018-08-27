@@ -96,7 +96,7 @@ class Photo(Exif):
             str(self.exif_datetime_original), '%Y-%m-%d'), self.user.birthday)
 
     def _get_timedelta(self):
-        if self.user.birthday:
+        if not self.user.birthday:
             print("User not set birthday")
         return datetime.strptime(str(self.exif_datetime_original), '%Y-%m-%d') \
             - self.user.birthday
