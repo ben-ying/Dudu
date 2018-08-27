@@ -1,1 +1,4 @@
 python-dateutil
+Django==2.0.5
+psycopg2
+Pillow
