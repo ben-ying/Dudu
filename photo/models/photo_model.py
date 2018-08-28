@@ -2,6 +2,7 @@ import os
 import pdb
 import photo
 
+from PIL import Image
 from django.db import models
 from PIL import Image
 from dateutil.relativedelta import relativedelta
@@ -47,7 +48,7 @@ class Photo(Exif):
         if delta.months > 0:
             description += str(delta.months) + "个月"
         if delta.days > 0:
-            description += str(delta.days) + "天"
+            description += "零" + str(delta.days) + "天"
 
         if description:
             return description
@@ -88,6 +89,9 @@ class Photo(Exif):
         os.rename(src_file_path, os.path.join(img_dir, src_file_name))
 
     def save(self, *args, **kwargs):
+        if not self.exif_image_width or not self.exif_image_height:
+            im = Image.open(os.path.join(PHOTO_APP_MEDIA_ROOT, self.user.auth_user.username, self.sub_dir, self.name))
+            self.exif_image_width, self.exif_image_height = im.size
         self._save_default_thumbnail_image()
         super(Photo, self).save(*args, **kwargs)
     
