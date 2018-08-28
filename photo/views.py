@@ -59,7 +59,7 @@ def reset(request, user_id):
 
     user_photo_dir = os.path.join(PHOTO_APP_MEDIA_ROOT, User.objects.get(id = user_id).auth_user.username)
     if not os.path.isdir(user_photo_dir):
-        return HttpResponse("Already Reset")
+        return HttpResponse("Already Reset1: " + user_photo_dir + ", " + PHOTO_APP_MEDIA_ROOT + ", " + os.path.abspath(os.path.join('photo', 'media', 'photo')))
 
     shutil.rmtree(user_photo_dir)
     return HttpResponse("RESET")

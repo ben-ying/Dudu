@@ -132,7 +132,7 @@ MEDIA_URL = '/media/'
 SOURCE_PHOTO_FOLDER = '/home/ben/Pictures'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
-PHOTO_APP_MEDIA_ROOT = os.path.join('photo', 'media', 'photo')
+PHOTO_APP_MEDIA_ROOT = os.path.join(BASE_DIR, 'photo', 'media', 'photo')
 PHOTO_APP_MEDIA_URL = os.path.join('/photo/', 'media', 'photo')
 
 
