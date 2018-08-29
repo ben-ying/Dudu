@@ -9,6 +9,7 @@ import pdb
 from django.shortcuts import render
 from django.http import HttpResponse
 from collections import defaultdict
+from collections import OrderedDict
 
 from .models.photo_model import Photo
 from .models.photo_model import THUMBNAIL_DIR
@@ -29,15 +30,18 @@ def users(request):
 
     return render(request, 'users.html', context)
 
+def sort_photo(p1, p2):
+    return p1 > p2
+
 def user_gallery(request, user_id):
     photo_dict = defaultdict(list)
-    photos = Photo.objects.filter(user__id = user_id).order_by('exif_datetime_original')
+    photos = Photo.objects.filter(user__id = user_id)
 
     for photo in photos:
         photo_dict[photo.get_sub_dir_description()].append(photo)
 
     context = {
-        'photo_dict': photo_dict.items(),
+        'photo_dict': sorted(photo_dict.items(), key=lambda s: s[1][0].duration),
     }
 
     return render(request, 'user_gallery.html', context)
@@ -99,6 +103,7 @@ def save_image(file_path, file_name, username):
         buf = afile.read()
         hasher.update(buf)
         photo.sha1sum = hasher.hexdigest()
+        photo.size = os.path.getsize(file_path)
 
     if not Photo.objects.filter(sha1sum = photo.sha1sum):
         img = PIL.Image.open(file_path)

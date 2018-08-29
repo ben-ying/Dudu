@@ -23,6 +23,8 @@ DEFAULT_THUMBNAIL_SIZE = 160
 class Photo(Exif):
     user = models.ForeignKey(User, verbose_name='user', related_name='photos', blank=True, null=True, on_delete=models.CASCADE)
     name = models.CharField('name', max_length=50)
+    size = models.PositiveIntegerField('size', default = 0)
+    group = models.ForeignKey('Group', on_delete=models.CASCADE, blank=True, null=True)
     labels = ArrayField(models.CharField('label', max_length=50), blank=True, null=True)
     sub_dir = models.CharField('sub_dir', max_length = 10)
     duration = models.DurationField('duration')
@@ -55,6 +57,18 @@ class Photo(Exif):
         else:
             return "出生日"
 
+    def get_read_size(self):
+        if self.size / 1024 < 1:
+            return str(self.size) + "B"
+        elif self.size / 1024 / 1024 < 1:
+            return "{:.1f}".format(self.size / 1024) + "KB"
+        elif self.size / 1024 / 1024 / 1024 < 1:
+            return "{:.1f}".format(self.size / 1024 / 1024) + "MB"
+        elif self.size / 1024 / 1024 / 1024 / 1024 < 1:
+            return "{:.1f}".format(self.size / 1024 / 1024 / 1024) + "GB"
+
+    get_read_size.short_description = 'Size'
+    
     def get_sub_dir_description(self):
         return self.sub_dir.replace("M", "个月").replace("Y", "岁")
 
@@ -130,3 +144,9 @@ class Photo(Exif):
         return self.name
 
 
+class Group(models.Model):
+    name = models.CharField('name', max_length=50)
+    description = models.TextField('description', max_length=1024, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
