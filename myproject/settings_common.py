@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'photo.apps.PhotoConfig',
+    'iaer.apps.IaerConfig',
 ]
 
 MIDDLEWARE = [
@@ -76,14 +77,23 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'default': {},
+    'irea': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'myproject',
+        'NAME': 'iaer',
         'USER': 'ben',
         'PASSWORD': '123456',
         'HOST': 'localhost',
         'PORT': '',
-    }
+    },
+    'photo': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'photo',
+        'USER': 'ben',
+        'PASSWORD': '123456',
+        'HOST': 'localhost',
+        'PORT': '',
+    },
 }
 
 
