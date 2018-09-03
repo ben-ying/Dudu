@@ -30,6 +30,18 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+    'DATETIME_FORMAT': "%Y-%m-%d %H:%M:%S",
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
+}
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -40,6 +52,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'photo.apps.PhotoConfig',
     'iaer.apps.IaerConfig',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -77,18 +91,9 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {},
-    'irea': {
+    'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'iaer',
-        'USER': 'ben',
-        'PASSWORD': '123456',
-        'HOST': 'localhost',
-        'PORT': '',
-    },
-    'photo': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'photo',
+        'NAME': 'myproject',
         'USER': 'ben',
         'PASSWORD': '123456',
         'HOST': 'localhost',

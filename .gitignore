@@ -110,3 +110,6 @@ photo/migrations/
 static/
 logs/
 myproject/settings.py
+
+# iaer
+iaer/migrations

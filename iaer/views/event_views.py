@@ -12,7 +12,7 @@ from iaer.constants import CODE_EMPTY_EVENT, MSG_EMPTY_EVENT, EVENT_FOOTER_IMAGE
     MSG_GET_EVENTS_SUCCESS, MSG_DELETE_EVENT_SUCCESS, CODE_NO_CONTENT, MSG_204, TYPE_IMAGE, TYPE_VIDEO, \
     EVENT_FOOTER_VIDEO, EVENT_FOOTER_VIDEO_THUMBNAIL, DIR_EVENT_VIDEO, DIR_EVENT_IMAGE, MSG_ADD_LIKE_SUCCESS
 from iaer.constants import CODE_SUCCESS, MSG_POST_EVENT_SUCCESS
-from iaer.models import BabyUser, Like
+from iaer.models import User, Like
 from iaer.models import Event
 from iaer.serializers.event import EventSerializer
 from iaer.serializers.like import LikeSerializer
@@ -50,7 +50,7 @@ class EventViewSet(CustomModelViewSet):
         if int(user_id) < 0:
             return super(EventViewSet, self).get_queryset().order_by("-id")
         else:
-            return super(EventViewSet, self).get_queryset().filter(baby_id=user_id).order_by("-id")
+            return super(EventViewSet, self).get_queryset().filter(user_id=user_id).order_by("-id")
 
     def create(self, request, *args, **kwargs):
         try:
@@ -65,7 +65,7 @@ class EventViewSet(CustomModelViewSet):
                 return simple_json_response(CODE_EMPTY_EVENT, MSG_EMPTY_EVENT)
             if user:
                 event = Event()
-                event.baby = BabyUser.objects.get(user=user)
+                event.user = User.objects.get(user=user)
                 event.created = timezone.now()
                 event.type = type
                 if title:
@@ -135,12 +135,12 @@ def like_view(request):
         like_user_id = request.data.get("like_user_id")
         user = get_user_by_token(token)
         if user:
-            baby = BabyUser.objects.get(id=like_user_id)
+            user = User.objects.get(id=like_user_id)
             event = Event.objects.get(id=event_id)
-            if Like.objects.filter(event=event, baby=baby):
-                Like.objects.filter(event=event, baby=baby).delete()
+            if Like.objects.filter(event=event, user=user):
+                Like.objects.filter(event=event, user=user).delete()
             like = Like()
-            like.baby = baby
+            like.user = user
             like.event = event
             like.save()
             response = LikeSerializer(like).data
@@ -162,7 +162,7 @@ def multiply_events_view(request):
     events = Event.objects.all()
     for event in events:
         e = Event()
-        e.baby = event.baby
+        e.user = event.user
         e.type = event.type
         e.title = event.title
         e.content = event.content

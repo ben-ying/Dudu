@@ -5,7 +5,7 @@ from iaer.models import RedEnvelope
 
 class RedEnvelopeSerializer(serializers.ModelSerializer):
     red_envelope_id = serializers.IntegerField(read_only=True, source="id")
-    user_id = serializers.IntegerField(read_only=True, source='baby.id')
+    user_id = serializers.IntegerField(read_only=True, source='user.id')
 
     class Meta:
         model = RedEnvelope

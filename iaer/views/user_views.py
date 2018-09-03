@@ -44,11 +44,9 @@ from iaer.constants import MSG_EMPTY_PASSWORD
 from iaer.constants import MSG_EMPTY_USERNAME
 from iaer.constants import MSG_INVALID_EMAIL
 from iaer.constants import MSG_INVALID_PASSWORD
-from iaer.models import BabyUser, Verify, Event, AppInfo
-from iaer.serializers.app_info import AppInfoSerializer
-from iaer.serializers.baby import BabyUserSerializer
-from iaer.serializers.event import EventSerializer
-from iaer.utils import json_response, invalid_token_response, upload_file_to_oss, get_user_by_token, \
+from iaer.models import User, Verify
+from iaer.serializers.user import UserSerializer
+from iaer.utils import json_response, invalid_token_response, get_user_by_token, \
     get_user, \
     CustomModelViewSet, save_error_log
 from iaer.utils import simple_json_response
@@ -64,11 +62,12 @@ def api_root(request, format=None):
 
 
 class UserViewSet(CustomModelViewSet):
-    queryset = BabyUser.objects.all()
-    serializer_class = BabyUserSerializer
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
     def list(self, request, *args, **kwargs):
         try:
+            import pdb; pdb.set_trace()
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid()
             token = request.data.get('token')
@@ -86,7 +85,7 @@ class UserViewSet(CustomModelViewSet):
         try:
             serializer = self.get_serializer(data=request.data)
             username = request.data.get('username')
-            baby_name = request.data.get('baby_name')
+            user_name = request.data.get('user_name')
             password = request.data.get('password')
             email = request.data.get('email')
             first_name = request.data.get('first_name', '')
@@ -95,7 +94,7 @@ class UserViewSet(CustomModelViewSet):
 
             if not username:
                 return simple_json_response(CODE_EMPTY_USER, MSG_EMPTY_USERNAME)
-            elif not baby_name:
+            elif not user_name:
                 return simple_json_response(CODE_EMPTY_BABY_NAME, MSG_EMPTY_BABY_NAME)
             elif not email:
                 return simple_json_response(CODE_EMPTY_EMAIL, MSG_EMPTY_EMAIL)
@@ -122,14 +121,12 @@ class UserViewSet(CustomModelViewSet):
                 self.perform_create(serializer)
                 response_data = serializer.data
                 response_data['token'] = Token.objects.create(user=user).key
-                baby_user = BabyUser.objects.get(user=user)
-                baby_user.locale = response_data['locale']
-                baby_user.created = timezone.now()
+                user_user = User.objects.get(user=user)
+                user_user.locale = response_data['locale']
+                user_user.created = timezone.now()
                 if base64:
                     image_name = username + time.strftime('%Y%m%d%H%M%S') + PROFILE_FOOTER_IMAGE
-                    response_data['profile'] = upload_file_to_oss(user.username + DIR_USER_PROFILE + image_name, base64)
-                    baby_user.profile = response_data['profile']
-                baby_user.save()
+                user_user.save()
                 return json_response(response_data, CODE_SUCCESS, MSG_CREATE_USER_SUCCESS)
             else:
                 return simple_json_response(CODE_INVALID_REQUEST, MSG_400)
@@ -146,14 +143,6 @@ class UserViewSet(CustomModelViewSet):
             user = get_user_by_token(token)
             if user:
                 response = super(UserViewSet, self).retrieve(request, *args, **kwargs).data
-                baby = self.get_object()
-                events = Event.objects.filter(baby=baby)
-                event_list = list()
-
-                for event in events:
-                    event_json = EventSerializer(event).data
-                    event_list.append(event_json)
-                response['events'] = event_list
                 return json_response(response, CODE_SUCCESS, MSG_GET_USER_DETAIL_SUCCESS)
             else:
                 return invalid_token_response()
@@ -162,7 +151,7 @@ class UserViewSet(CustomModelViewSet):
 
     def update(self, request, *args, **kwargs):
         token = request.data.get('token')
-        baby_name = request.data.get('baby_name')
+        user_name = request.data.get('user_name')
         phone = request.data.get('phone')
         email = request.data.get('email')
         gender = request.data.get('gender')
@@ -173,8 +162,8 @@ class UserViewSet(CustomModelViewSet):
         try:
             user = get_user_by_token(token)
             if user:
-                if BabyUser.objects.filter(user=user):
-                    baby = BabyUser.objects.get(user=user)
+                if User.objects.filter(user=user):
+                    user = User.objects.get(user=user)
 
                     if email:
                         if User.objects.filter(username__iexact=email) or User.objects.filter(email__iexact=email):
@@ -182,26 +171,24 @@ class UserViewSet(CustomModelViewSet):
                         else:
                             user.email = email
                             user.save()
-                    if baby_name:
-                        baby.baby_name = baby_name
+                    if user_name:
+                        user.user_name = user_name
                     if phone:
-                        if BabyUser.objects.filter(phone=phone):
+                        if User.objects.filter(phone=phone):
                             return simple_json_response(CODE_DUPLICATE_PHONE, MSG_DUPLICATE_PHONE)
                         else:
-                            baby.phone = phone
+                            user.phone = phone
                     if gender:
-                        baby.gender = gender
+                        user.gender = gender
                     if birthday:
-                        baby.birth = birthday
+                        user.birthday = birthday
                     if hobbies:
-                        baby.hobbies = hobbies
+                        user.hobbies = hobbies
                     if base64:
                         image_name = user.username + time.strftime('%Y%m%d%H%M%S') + PROFILE_FOOTER_IMAGE
-                        profile = upload_file_to_oss(user.username + DIR_USER_PROFILE + image_name, base64)
-                        baby.profile = profile
-                    baby.save()
+                    user.save()
 
-                    response_data = BabyUserSerializer(baby).data
+                    response_data = UserSerializer(user).data
                     response_data['token'] = Token.objects.get(user=user).key
 
                     return json_response(response_data, CODE_SUCCESS, MSG_UPDATE_USER_INFO_SUCCESS)
@@ -227,10 +214,10 @@ def login_view(request):
                 if not user:
                     user = authenticate(username=user.username, password=password)
         if user:
-            baby = BabyUser.objects.get(user=user)
-            if baby:
+            user = User.objects.get(user=user)
+            if user:
                 if user.is_active:
-                    response_data = BabyUserSerializer(baby).data
+                    response_data = UserSerializer(user).data
                     if Token.objects.filter(user=user):
                         response_data['token'] = Token.objects.get(user=user).key
                         return json_response(response_data, CODE_SUCCESS, MSG_LOGIN_SUCCESS)
@@ -256,30 +243,30 @@ def send_verify_code_view(request):
                 not User.objects.filter(username=email.lower()):
             return simple_json_response(CODE_INVALID_EMAIL, MSG_NO_SUCH_EMAIL)
 
-        baby = None
+        user = None
         if User.objects.filter(email=email.lower()):
             user = User.objects.get(email=email.lower())
-            baby = BabyUser.objects.get(user=user)
+            user = User.objects.get(user=user)
         elif User.objects.filter(username=email.lower()):
             user = User.objects.get(username=email.lower())
-            baby = BabyUser.objects.get(user=user)
+            user = User.objects.get(user=user)
 
         verify_code = get_random_string(length=6, allowed_chars='0123456789').lower()
-        send_email(baby, email, verify_code)
+        send_email(user, email, verify_code)
 
         return simple_json_response(CODE_SUCCESS, MSG_SEND_VERIFY_CODE_SUCCESS)
     except Exception as e:
         return save_error_log(request, e)
 
 
-def send_email(baby, to_email, verify_code, is_email_verify=True):
-    if Verify.objects.filter(baby=baby):
-        verify = Verify.objects.get(baby=baby)
+def send_email(user, to_email, verify_code, is_email_verify=True):
+    if Verify.objects.filter(user=user):
+        verify = Verify.objects.get(user=user)
         if is_email_verify:
             verify.email_verify_code = verify_code
     else:
         verify = Verify()
-        verify.baby = baby
+        verify.user = user
         if is_email_verify:
             verify.email_verify_code = verify_code
 
@@ -313,9 +300,9 @@ def reset_password_with_verify_code_view(request):
 
         user = get_user(email=email)
         if user:
-            baby = BabyUser.objects.get(user=user)
-            if Verify.objects.filter(baby=baby, email_verify_code=code.lower()):
-                verify = Verify.objects.get(baby=baby, email_verify_code=code.lower())
+            user = User.objects.get(user=user)
+            if Verify.objects.filter(user=user, email_verify_code=code.lower()):
+                verify = Verify.objects.get(user=user, email_verify_code=code.lower())
                 if (time.time() - float(format(verify.created, 'U'))) > VERIFY_CODE_EXPIRED_TIME:
                     return simple_json_response(CODE_EXPIRED_VERIFY_CODE, MSG_EXPIRED_VERIFY_CODE)
                 else:
@@ -330,19 +317,3 @@ def reset_password_with_verify_code_view(request):
         return save_error_log(request, e)
 
 
-@api_view(['POST'])
-def get_app_info(request):
-    try:
-        token = request.data.get('token')
-        user = get_user_by_token(token)
-        if user:
-            response_data = dict()
-            if AppInfo.objects.all():
-                app_info = AppInfo.objects.all().order_by('-id')[0]
-                response_data = AppInfoSerializer(app_info).data
-                response_data['app_name'] = app_info.app_file.file.name.split("/")[-1].replace('.apk', '')
-            return json_response(response_data, CODE_SUCCESS, MSG_GET_APP_INFO_SUCCESS)
-        else:
-            return invalid_token_response()
-    except Exception as e:
-        return save_error_log(request, e)
