@@ -142,7 +142,7 @@ class IaerViewSet(CustomModelViewSet):
 
             if user:
                 iaer = Iaer()
-                iaer.user = User.objects.get(user=user)
+                iaer.user = User.objects.get(auth_user=user)
                 iaer.money = money
                 iaer.category = category
                 iaer.remark = remark
