@@ -67,7 +67,6 @@ class UserViewSet(CustomModelViewSet):
 
     def list(self, request, *args, **kwargs):
         try:
-            import pdb; pdb.set_trace()
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid()
             token = request.data.get('token')
