@@ -66,7 +66,7 @@ class RedEnvelopeViewSet(CustomModelViewSet):
 
             if user:
                 red_envelope = RedEnvelope()
-                red_envelope.user = User.objects.get(user=user)
+                red_envelope.user = User.objects.get(auth_user=user)
                 red_envelope.money = money
                 red_envelope.money_from = money_from
                 red_envelope.remark = remark
