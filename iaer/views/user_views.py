@@ -205,27 +205,26 @@ def login_view(request):
 
     try:
         if token:
-            user = Token.objects.get(key=token).user
+            auth_user = Token.objects.get(key=token).user
         else:
-            user = authenticate(username=username, password=password)
-            if not user and validate_email(username):
-                user = get_user(email=username)
-                if not user:
-                    user = authenticate(username=user.username, password=password)
-        if user:
-            user = User.objects.get(user=user)
+            auth_user = authenticate(username=username, password=password)
+            if not auth_user and validate_email(username):
+                auth_user = get_user(email=username)
+                if not auth_user:
+                    auth_user = authenticate(username=user.username, password=password)
+        if auth_user:
+            user = User.objects.get(auth_user=auth_user)
             if user:
-                if user.is_active:
+                if auth_user.is_active:
                     response_data = UserSerializer(user).data
-                    if Token.objects.filter(user=user):
-                        response_data['token'] = Token.objects.get(user=user).key
+                    if Token.objects.filter(user=auth_user):
+                        response_data['token'] = Token.objects.get(user=auth_user).key
                         return json_response(response_data, CODE_SUCCESS, MSG_LOGIN_SUCCESS)
                     else:
                         return invalid_token_response()
                 else:
                     return simple_json_response(CODE_NOT_ACTIVE, MSG_NOT_ACTIVE_USER)
             else:
-                user.delete()
                 return simple_json_response(CODE_INCORRECT_USER_NAME_OR_PASSWORD, MSG_INCORRECT_USER_NAME_OR_PASSWORD)
         else:
             return simple_json_response(CODE_INCORRECT_USER_NAME_OR_PASSWORD, MSG_INCORRECT_USER_NAME_OR_PASSWORD)
