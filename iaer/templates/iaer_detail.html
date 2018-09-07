@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <script src="http://demos.jquerymobile.com/1.4.5/js/jquery.js"></script>
+        <style type="text/css">
+select, input{margin-top: 16px; margin-left: 16px; margin-right: 16px; width: 100%;}
+    </head>
+    <body>
+        <form action="/" method="post">
+            <center>
+            <table cellpadding="6">
+                <tr>
+                    <td>
+                    类别: {{iaer.category}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    金额: {{iaer.money}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    备注: {{iaer.remark}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    日期: {{iaer.created | date:'Y-m-d'}}
+                    </td>
+                </tr>
+                <tr height="100px"></tr>
+                <tr>
+                    <td>
+                        <input id="submit" type="submit" value="删除" />
+                    </td>
+                </tr>
+            </table>
+            </center>
+        </form>
+    </body>
+</html>

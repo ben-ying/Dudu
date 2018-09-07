@@ -8,6 +8,7 @@ import traceback
 
 from django.http import HttpResponse
 from django.utils import timezone
+from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view
 
@@ -21,6 +22,22 @@ from iaer.serializers.red_envelope import RedEnvelopeSerializer
 from iaer.utils import invalid_token_response, get_user_by_token, save_error_log, \
         CustomModelViewSet, json_response, LargeResultsSetPagination
 from iaer.utils import simple_json_response
+
+
+def iaer_list(request):
+    context = {
+        'iaers': Iaer.objects.all(),
+    }
+
+    return render(request, 'iaers.html', context)
+
+
+def iaer_detail(request, iaer_id):
+    context = {
+        'iaer': Iaer.objects.get(id = iaer_id),
+    }
+
+    return render(request, 'iaer_detail.html', context)
 
 
 def about_us_view(request):
