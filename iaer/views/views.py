@@ -9,6 +9,7 @@ import traceback
 from django.http import HttpResponse
 from django.utils import timezone
 from django.shortcuts import render
+from django.template import RequestContext
 from rest_framework import status
 from rest_framework.decorators import api_view
 
@@ -30,6 +31,13 @@ def iaer_list(request):
     }
 
     return render(request, 'iaers.html', context)
+
+
+def iaer_add(request):
+    if request.method == "POST":
+        pass
+
+    return render(request, 'iaer_add.html')
 
 
 def iaer_detail(request, iaer_id):
