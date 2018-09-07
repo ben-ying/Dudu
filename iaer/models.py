@@ -94,6 +94,9 @@ class Iaer(models.Model):
     datetime = models.DateTimeField(auto_now=True, blank=True, null=True)
     description = TextField(blank=True, null=True)
     timing = models.CharField(max_length=100, blank=True, null=True) # for every week or every month input or consumption
+
+    class Meta:
+        ordering = ['-id',]
     
 
 class Verify(models.Model):

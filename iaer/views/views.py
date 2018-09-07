@@ -12,6 +12,7 @@ from django.shortcuts import render
 from django.template import RequestContext
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.authtoken.models import Token
 
 from iaer.constants import CODE_SUCCESS, FEEDBACK_FOOTER_IMAGE, DIR_FEEDBACK, MSG_NO_CONTENT, \
     MSG_GET_RED_ENVELOPES_SUCCESS, MSG_DELETE_RED_ENVELOPE_SUCCESS, CODE_NO_CONTENT, \
@@ -25,9 +26,23 @@ from iaer.utils import invalid_token_response, get_user_by_token, save_error_log
 from iaer.utils import simple_json_response
 
 
-def iaer_list(request):
+def index(request):
     context = {
-        'iaers': Iaer.objects.all(),
+        'users': User.objects.all(),
+    }
+
+    return render(request, 'index.html', context)
+
+
+def iaer_list(request, user_id):
+    user = User.objects.get(id = user_id)
+    try:
+        request.session['token'] = Token.objects.get(user = user.auth_user).key
+    except Exception as e:
+        return save_error_log(request, e)
+
+    context = {
+        'iaers': Iaer.objects.filter(user = user),
     }
 
     return render(request, 'iaers.html', context)

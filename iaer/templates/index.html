@@ -1,0 +1,16 @@
+{% load static %}
+<html>
+    <head>
+    </head>
+    <body>
+        {% if users %}
+            {% for user in users %}
+            <li>
+                <a href="{% url 'iaer:iaer-list' user.id %}">
+                    {{user.auth_user.username}}
+                </a>
+            </li>
+            {% endfor %}
+        {% endif %}
+    </body>
+<html>

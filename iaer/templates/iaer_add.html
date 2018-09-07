@@ -51,7 +51,7 @@ select, input{margin-top: 16px; margin-left: 16px; margin-right: 16px; width: 10
         </script>
     </head>
     <body>
-        <form action=""{% url 'iaer:iaer-add' %}"" method="post">{% csrf_token %}
+        <form action="{% url 'iaer:iaer-add' %}" method="post">{% csrf_token %}
             <center>
             <table>
                 <tr>
