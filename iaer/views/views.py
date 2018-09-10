@@ -10,6 +10,8 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.shortcuts import render
 from django.template import RequestContext
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.authtoken.models import Token
@@ -50,7 +52,30 @@ def iaer_list(request, user_id):
 
 def iaer_add(request):
     if request.method == "POST":
-        pass
+        try:
+            category = request.POST.get('category')
+            if int(request.POST.get('type')) == 0:
+                money = 0 - int(request.POST.get('money'))
+            else:
+                money = int(request.POST.get('money'))
+            remark = request.POST.get('remark')
+            token = request.session['token']
+            user = get_user_by_token(token)
+
+            if user:
+                iaer = Iaer()
+                iaer.user = User.objects.get(auth_user=user)
+                iaer.money = money
+                iaer.category = category
+                iaer.remark = remark
+                iaer.created = timezone.now()
+                iaer.save()
+
+                return HttpResponseRedirect(reverse('iaer:iaer-list', args=(iaer.user.id,)))
+            else:
+                return invalid_token_response()
+        except Exception as e:
+            return save_error_log(request, e)
 
     return render(request, 'iaer_add.html')
 
