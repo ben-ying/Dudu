@@ -75,7 +75,7 @@ api_urlpatterns = [
 
 urlpatterns = [
     path('', index, name='index'),
-    path('iaers/<int:user_id>/', iaer_list, name='iaer-list'),
+    path('users/<int:user_id>/', iaer_list, name='iaer-list'),
     path('iaers/add', iaer_add, name='iaer-add'),
     path('iaers/<int:iaer_id>/', iaer_detail, name='iaer-detail'),
     path('api/', include(api_urlpatterns)),

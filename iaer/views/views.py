@@ -51,7 +51,7 @@ def iaer_list(request, user_id):
 
 
 def iaer_add(request):
-    if request.method == "POST":
+    if request.method == 'POST':
         try:
             category = request.POST.get('category')
             if int(request.POST.get('type')) == 0:
@@ -81,8 +81,15 @@ def iaer_add(request):
 
 
 def iaer_detail(request, iaer_id):
+    iaer = Iaer.objects.get(id = iaer_id)
+
+    if request.method == 'POST':
+        token = request.session['token']
+        iaer.delete()
+        return HttpResponseRedirect(reverse('iaer:iaer-list', args=(iaer.user.id,)))
+
     context = {
-        'iaer': Iaer.objects.get(id = iaer_id),
+        'iaer': iaer,
     }
 
     return render(request, 'iaer_detail.html', context)
