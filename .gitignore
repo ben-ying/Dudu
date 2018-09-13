@@ -105,9 +105,9 @@ venv.bak/
 
 
 # photo
-media/
+photo/media/
 photo/migrations/
-static/
+photo/static/
 logs/
 myproject/settings.py
 
