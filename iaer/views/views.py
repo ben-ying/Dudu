@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.shortcuts import render
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -71,7 +72,7 @@ def iaer_add(request):
                 iaer.created = timezone.now()
                 iaer.save()
 
-                return HttpResponseRedirect(reverse('iaer:iaer-list', args=(iaer.user.id,)))
+                return redirect(reverse('iaer:iaer-list', args=(iaer.user.id,)))
             else:
                 return invalid_token_response()
         except Exception as e:
@@ -86,7 +87,7 @@ def iaer_detail(request, iaer_id):
     if request.method == 'POST':
         token = request.session['token']
         iaer.delete()
-        return HttpResponseRedirect(reverse('iaer:iaer-list', args=(iaer.user.id,)))
+        return redirect(reverse('iaer:iaer-list', args=(iaer.user.id,)))
 
     context = {
         'iaer': iaer,

@@ -1,100 +1,97 @@
-<html>
-    <head>
-        <script src="http://demos.jquerymobile.com/1.4.5/js/jquery.js"></script>
-        <style type="text/css">
-select, input{margin-top: 16px; margin-left: 16px; margin-right: 16px; width: 100%;}
-        </style>
-        <script type="text/javascript">
-            function check_valid() {
-                if ($("#category_sel").get(0).selectedIndex == 0 || $("#money_input").val().trim().length == 0 || $("#remark_input").val().trim() == 0) {
-                    $("#submit").attr("disabled", true);
-                } else {
-                    $("#submit").attr("disabled", false);
+{% extends "base.html" %}
+{% block head %}
+<script type="text/javascript">
+    function check_valid() {
+        if ($("#category_sel").get(0).selectedIndex == 0 || $("#money_input").val().trim().length == 0 || $("#remark_input").val().trim() == 0) {
+            $('#submit').button("disabled");
+        } else {
+            $('#submit').button("enable");
+        }
+    }
+
+    $(document).ready(function () {
+        $("#type").parent().hide();
+        $("#category").parent().hide();
+        $("#category_sel").bind("change", function() {
+            $("#category").val($(this).get(0).selectedOptions[0].text);
+            if ($(this).get(0).selectedIndex == 0) {
+                $('#submit').button("disabled");
+            } else {
+                if ($(this).val() == "revenue" && $("#type_sel").get(0).selectedIndex == 0) {
+                    $("#type_sel").get(0).selectedIndex = 1;
+                } else if ($(this).val() != "revenue" && $("#type_sel").get(0).selectedIndex == 1) {
+                    $("#type_sel").get(0).selectedIndex = 0;
                 }
+                $("#type").val($("#type_sel").get(0).selectedIndex);
+                check_valid();
             }
+        });
 
-            $(document).ready(function () {
-                $("#category_sel").bind("change", function() {
-                    $("#category").val($(this).get(0).selectedOptions[0].text);
-                    if ($(this).get(0).selectedIndex == 0) {
-                        $("#submit").attr("disabled", true);
-                    } else {
-                        if ($(this).val() == "revenue" && $("#type_sel").get(0).selectedIndex == 0) {
-                            $("#type_sel").get(0).selectedIndex = 1;
-                        } else if ($(this).val() != "revenue" && $("#type_sel").get(0).selectedIndex == 1) {
-                            $("#type_sel").get(0).selectedIndex = 0;
-                        }
-                        $("#type").val($("#type_sel").get(0).selectedIndex);
-                        check_valid();
-                    }
-                });
+        $("#type_sel").bind("change", function() {
+            $("#type").val($(this).get(0).selectedIndex);
+            if ($(this).get(0).selectedIndex == 0 && $("#category_sel").val() == "revenue") {
+                $("#category_sel").get(0).selectedIndex = 0;
+            } else if ($("#category_sel").val() != "revenue" && $(this).get(0).selectedIndex == 1) {
+                $("#category_sel").get(0).selectedIndex = $('#category_sel')[0].options.length - 1;
+            }
+            $("#category").val($("#category_sel").get(0).selectedOptions[0].text);
+        });
 
-                $("#type_sel").bind("change", function() {
-                    $("#type").val($(this).get(0).selectedIndex);
-                    if ($(this).get(0).selectedIndex == 0 && $("#category_sel").val() == "revenue") {
-                        $("#category_sel").get(0).selectedIndex = 0;
-                    } else if ($("#category_sel").val() != "revenue" && $(this).get(0).selectedIndex == 1) {
-                        $("#category_sel").get(0).selectedIndex = $('#category_sel')[0].options.length - 1;
-                    }
-                    $("#category").val($("#category_sel").get(0).selectedOptions[0].text);
-                });
+        $("#money_input").on('input', function() {
+            check_valid();
+        });
 
-                $("#money_input").on('input', function() {
-                    check_valid();
-                });
+        $("#remark_input").on('input', function() {
+            check_valid();
+        });
+    });
 
-                $("#remark_input").on('input', function() {
-                    check_valid();
-                });
-            });
-
-        </script>
-    </head>
-    <body>
-        <form action="{% url 'iaer:iaer-add' %}" method="post">{% csrf_token %}
-            <center>
-            <table>
-                <tr>
-                    <td>
-                        <input id="category" name="category" hidden="hidden">
-                        <select id="category_sel">
-                            <option value="none">请选择类型</option>
-                            <option value="daily_necessities">生活用品</option>
-                            <option value="costume">服饰</option>
-                            <option value="food">餐饮</option>
-                            <option value="child">孩子</option>
-                            <option value="decoration">装修</option>
-                            <option value="other">其他</option>
-                            <option value="revenue">收入</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input id="type" name="type" hidden="hidden">
-                        <select id="type_sel">
-                            <option value="output">支出</option>
-                            <option value="input">收入</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input id="money_input" type="number" name="money" placeholder="金额" onkeydown="javascript: return event.keyCode == 69 ? false : true">
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input id="remark_input" type="text" name="remark" placeholder="备注">
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input id="submit" type="submit" value="添加" disabled="disabled"/>
-                    </td>
-                </tr>
-            </table>
-            </center>
-        </form>
-    </body>
-</html>
+</script>
+{% endblock %}
+{% block body %}
+<form action="{% url 'iaer:iaer-add' %}" method="post">{% csrf_token %}
+    <center>
+    <table>
+        <tr>
+            <td>
+                <input id="category" name="category" hidden="hidden">
+                <select id="category_sel">
+                    <option value="none">请选择类型</option>
+                    <option value="daily_necessities">生活用品</option>
+                    <option value="costume">服饰</option>
+                    <option value="food">餐饮</option>
+                    <option value="child">孩子</option>
+                    <option value="decoration">装修</option>
+                    <option value="other">其他</option>
+                    <option value="revenue">收入</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id="type" name="type" hidden="hidden">
+                <select id="type_sel">
+                    <option value="output">支出</option>
+                    <option value="input">收入</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id="money_input" type="number" name="money" placeholder="金额" onkeydown="javascript: return event.keyCode == 69 ? false : true">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id="remark_input" type="text" name="remark" placeholder="备注">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id="submit" type="submit" value="添加" disabled="disabled"/>
+            </td>
+        </tr>
+    </table>
+    </center>
+</form>
+{% endblock %}
