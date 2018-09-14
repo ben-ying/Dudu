@@ -5,12 +5,12 @@
         select, input{margin-top: 16px; margin-left: 16px; margin-right: 16px; width: 100%;}
     </head>
     <body>
-        <form action="{% url 'iaer:iaer-detail' iaer.id %}" method="post">{% csrf_token %}
+        <form action="{% url 'iaer:iaer-delete' object.id %}" method="post">{% csrf_token %}
             <center>
-                <div>类别: {{iaer.category}}</div></br>
-                <div>金额: {{iaer.money}}</div></br>
-                <div>备注: {{iaer.remark}}</div></br>
-                <div>日期: {{iaer.created | date:'Y-m-d'}}</div></br></br>
+                <p>类别: {{object.category}}</p>
+                <p>金额: {{object.money}}</p>
+                <p>备注: {{object.remark}}</p>
+                <p>日期: {{object.created | date:'Y-m-d'}}</p></br>
                 <input id="submit" type="submit" value="删除" />
             </center>
         </form>

@@ -10,11 +10,11 @@ from .views.user_views import UserViewSet, login_view, send_verify_code_view, re
 from .views.user_views import api_root
 
 # website
-from iaer.views.views import index
-from iaer.views.views import iaer_list
-from iaer.views.views import iaer_add
-from iaer.views.views import iaer_detail
-
+from iaer.views.webviews import UserListView
+from iaer.views.webviews import IaerListView
+from iaer.views.webviews import IaerDeleteView
+from iaer.views.webviews import IaerDetailView
+from iaer.views.webviews import IaerCreateView
 
 
 api_user_list = UserViewSet.as_view({
@@ -74,10 +74,11 @@ api_urlpatterns = [
 ]
 
 urlpatterns = [
-    path('', index, name='index'),
-    path('users/<int:user_id>/', iaer_list, name='iaer-list'),
-    path('iaers/add', iaer_add, name='iaer-add'),
-    path('iaers/<int:iaer_id>/', iaer_detail, name='iaer-detail'),
+    path('users/', UserListView.as_view(), name='index'),
+    path('users/<int:pk>/', IaerListView.as_view(), name='iaer-list'),
+    path('iaers/add', IaerCreateView.as_view(), name='iaer-add'),
+    path('iaers/<int:pk>/', IaerDetailView.as_view(), name='iaer-detail'),
+    path('iaers/delete/<int:pk>/', IaerDeleteView.as_view(), name='iaer-delete'),
     path('api/', include(api_urlpatterns)),
 ]
 

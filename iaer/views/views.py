@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import time
@@ -27,73 +26,6 @@ from iaer.serializers.red_envelope import RedEnvelopeSerializer
 from iaer.utils import invalid_token_response, get_user_by_token, save_error_log, \
         CustomModelViewSet, json_response, LargeResultsSetPagination
 from iaer.utils import simple_json_response
-
-
-def index(request):
-    context = {
-        'users': User.objects.all(),
-    }
-
-    return render(request, 'index.html', context)
-
-
-def iaer_list(request, user_id):
-    user = User.objects.get(id = user_id)
-    try:
-        request.session['token'] = Token.objects.get(user = user.auth_user).key
-    except Exception as e:
-        return save_error_log(request, e)
-
-    context = {
-        'iaers': Iaer.objects.filter(user = user),
-    }
-
-    return render(request, 'iaers.html', context)
-
-
-def iaer_add(request):
-    if request.method == 'POST':
-        try:
-            category = request.POST.get('category')
-            if int(request.POST.get('type')) == 0:
-                money = 0 - int(request.POST.get('money'))
-            else:
-                money = int(request.POST.get('money'))
-            remark = request.POST.get('remark')
-            token = request.session['token']
-            user = get_user_by_token(token)
-
-            if user:
-                iaer = Iaer()
-                iaer.user = User.objects.get(auth_user=user)
-                iaer.money = money
-                iaer.category = category
-                iaer.remark = remark
-                iaer.created = timezone.now()
-                iaer.save()
-
-                return redirect(reverse('iaer:iaer-list', args=(iaer.user.id,)))
-            else:
-                return invalid_token_response()
-        except Exception as e:
-            return save_error_log(request, e)
-
-    return render(request, 'iaer_add.html')
-
-
-def iaer_detail(request, iaer_id):
-    iaer = Iaer.objects.get(id = iaer_id)
-
-    if request.method == 'POST':
-        token = request.session['token']
-        iaer.delete()
-        return redirect(reverse('iaer:iaer-list', args=(iaer.user.id,)))
-
-    context = {
-        'iaer': iaer,
-    }
-
-    return render(request, 'iaer_detail.html', context)
 
 
 def about_us_view(request):
