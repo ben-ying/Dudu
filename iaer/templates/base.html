@@ -1,5 +1,8 @@
 {% load static %}
 <html>
+    {% block data-role %}
+        <div data-role="page" data-url="{{ request.get_full_path }}"/>
+    {% endblock %}
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,7 +13,6 @@
         {% block head %}{% endblock %}
     </head>
     <body>
-        <div data-role="page" data-url="{{ request.get_full_path }}"/>
         {% block body %}
         {% endblock %}
     </body>
