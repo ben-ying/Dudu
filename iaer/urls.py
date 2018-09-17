@@ -6,8 +6,8 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 # api
 from iaer.views.views import about_us_view, RedEnvelopeViewSet, IaerViewSet
-from .views.user_views import UserViewSet, login_view, send_verify_code_view, reset_password_with_verify_code_view
-from .views.user_views import api_root
+from iaer.views.user_views import UserViewSet, login_view, send_verify_code_view, reset_password_with_verify_code_view
+from iaer.views.user_views import api_root
 
 # website
 from iaer.views.webviews import UserListView

@@ -118,8 +118,8 @@ def delete_event_file(event):
         delete_file_from_oss(event.video_thumbnail, username + DIR_EVENT_VIDEO)
     if event.video_url:
         delete_file_from_oss(event.video_url, username + DIR_EVENT_VIDEO)
-'''
 
+'''
 def get_user_by_token(token):
     if Token.objects.filter(key=token):
         return Token.objects.get(key=token).user

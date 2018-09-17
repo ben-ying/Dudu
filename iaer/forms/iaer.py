@@ -1,15 +1,19 @@
 from django import forms
+from django.utils.translation import gettext as _
 
 from iaer.models import Iaer
 
-class IaerForm(forms.ModelForm):
-    MONEY_CHOICES = (
-        (u'收入', u'收入'),
-        (u'支出', u'支出'),
-    )
 
-    iaer_type = forms.ChoiceField(choices=MONEY_CHOICES) 
+class IaerForm(forms.ModelForm):
+    remark = forms.CharField(required=True)
 
     class Meta:
         model = Iaer
-        fields = ['category', 'iaer_type', 'money', 'remark']
+        fields = ['category', 'money', 'remark']
+        labels = {
+                'category': _('类别'),
+                'money': _('金额'),
+                'remark': _('备注'),
+                }
+
+

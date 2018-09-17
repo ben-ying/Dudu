@@ -1,56 +1,9 @@
 {% extends "base.html" %}
 {% block head %}
-<script type="text/javascript">
-    function check_valid() {
-        if ($("#category_sel").get(0).selectedIndex == 0 || $("#money_input").val().trim().length == 0 || $("#remark_input").val().trim() == 0) {
-            $('#submit').button("disabled");
-        } else {
-            $('#submit').button("enable");
-        }
-    }
-
-    $(document).ready(function () {
-        $("#type").parent().hide();
-        $("#category").parent().hide();
-        $("#category_sel").bind("change", function() {
-            $("#category").val($(this).get(0).selectedOptions[0].text);
-            if ($(this).get(0).selectedIndex == 0) {
-                $('#submit').button("disabled");
-            } else {
-                if ($(this).val() == "revenue" && $("#type_sel").get(0).selectedIndex == 0) {
-                    $("#type_sel").get(0).selectedIndex = 1;
-                } else if ($(this).val() != "revenue" && $("#type_sel").get(0).selectedIndex == 1) {
-                    $("#type_sel").get(0).selectedIndex = 0;
-                }
-                $("#type").val($("#type_sel").get(0).selectedIndex);
-                check_valid();
-            }
-        });
-
-        $("#type_sel").bind("change", function() {
-            $("#type").val($(this).get(0).selectedIndex);
-            if ($(this).get(0).selectedIndex == 0 && $("#category_sel").val() == "revenue") {
-                $("#category_sel").get(0).selectedIndex = 0;
-            } else if ($("#category_sel").val() != "revenue" && $(this).get(0).selectedIndex == 1) {
-                $("#category_sel").get(0).selectedIndex = $('#category_sel')[0].options.length - 1;
-            }
-            $("#category").val($("#category_sel").get(0).selectedOptions[0].text);
-        });
-
-        $("#money_input").on('input', function() {
-            check_valid();
-        });
-
-        $("#remark_input").on('input', function() {
-            check_valid();
-        });
-    });
-
-</script>
 {% endblock %}
 {% block body %}
 <form method="post">{% csrf_token %}
     {{ form.as_p }}
-<input type="submit" value="Save" />
+<input type="submit" id="submit" value="保存" />
 </form>
 {% endblock %}
