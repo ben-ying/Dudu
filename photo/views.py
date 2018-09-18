@@ -8,6 +8,11 @@ import pdb
 
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView
+from django.views.generic.edit import DeleteView
 from collections import defaultdict
 from collections import OrderedDict
 
@@ -21,17 +26,11 @@ from myproject.settings import PHOTO_APP_MEDIA_ROOT
 
 
 def index(request):
-    return HttpResponse("Not finished")
+    return redirect('photo:users')
 
-def users(request):
-    context = {
-        'users': User.objects.all(),
-    }
-
-    return render(request, 'users.html', context)
-
-def sort_photo(p1, p2):
-    return p1 > p2
+class UserListView(ListView):
+    model = User
+    template_name = 'users.html'
 
 def user_gallery(request, user_id):
     photo_dict = defaultdict(list)

@@ -1,43 +1,41 @@
+{% extends "base.html" %}
 {% load static %}
-<html>
-    <head>
-        <link type="text/css" rel="stylesheet" href="{% static 'css/lightgallery.css' %}" /> 
-        <!-- jQuery version must be >= 1.8.0; -->
-        <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+{% block head %}        
+    <link type="text/css" rel="stylesheet" href="{% static 'css/lightgallery.css' %}" /> 
 
-        <!-- A jQuery plugin that adds cross-browser mouse wheel support. (Optional) -->
-        <script src="{% static 'js/jquery.mousewheel.min.js' %}"></script>
+    <script src="{% static 'js/jquery-3.1.1.js' %}"></script>
+    <!-- A jQuery plugin that adds cross-browser mouse wheel support. (Optional) -->
+    <script src="{% static 'js/jquery.mousewheel.min.js' %}"></script>
 
-        <script src="{% static 'js/lightgallery-all.js' %}"></script>
+    <script src="{% static 'js/lightgallery-all.js' %}"></script>
 
-        <!-- lightgallery plugins -->
-        <script src="{% static 'js/lg-thumbnail.js' %}"></script>
-        <script src="{% static 'js/lg-fullscreen.js' %}"></script>
-    </head>
-    <body>
-        {% if photo_dict %}
+    <!-- lightgallery plugins -->
+    <script src="{% static 'js/lg-thumbnail.js' %}"></script>
+    <script src="{% static 'js/lg-fullscreen.js' %}"></script>
+{% endblock %}
+{% block content %}        
+    {% if photo_dict %}
+    {% for key, photos in photo_dict %}
+    {% if photos %}
+    <div>{{key}}</div>
+    <div id="lightgallery{{key}}">
+        {% for photo in photos %}
+        <a id="{{photo.exif_datetime_original | date:'Y-m-d'}}" name="{{photo.get_age_description}}" href="{{ photo.get_image_url }}">
+            <img src="{{ photo.get_thumbnail_url }}" />
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+
+    <script type="text/javascript">
+        $(document).ready(function() {
             {% for key, photos in photo_dict %}
-                {% if photos %}
-                <div>{{key}}</div>
-                <div id="lightgallery{{key}}">
-                    {% for photo in photos %}
-                    <a id="{{photo.exif_datetime_original | date:'Y-m-d'}}" name="{{photo.get_age_description}}" href="{{ photo.get_image_url }}">
-                        <img src="{{ photo.get_thumbnail_url }}" />
-                    </a>
-                    {% endfor %}
-                    </div>
-                {% endif %}
+            {% if photos %}
+                $("#lightgallery{{key}}").lightGallery(); 
+            {% endif %}
             {% endfor %}
-        {% endif %}
-
-        <script type="text/javascript">
-            $(document).ready(function() {
-                {% for key, photos in photo_dict %}
-                    {% if photos %}
-                    $("#lightgallery{{key}}").lightGallery(); 
-                    {% endif %}
-                {% endfor %}
-            });
-        </script>
-    </body>
-<html>
+        });
+    </script>
+{% endblock %}
