@@ -1,23 +1,24 @@
-
-{% load static %}
-<html>
-    <head>
-    </head>
-    <body>
-        {% if users %}
-            {% for user in users %}
-            <li>
+{% extends "base.html" %}
+{% block content %}        
+    {% for user in object_list %}
+    <table width="100%">
+        <tr>
+            <td>
                 <a href="{% url 'photo:user-gallery' user.id%}">
                     {{user.auth_user.username}}
                 </a>
+            </td>
+            <td>
                 <a href="{% url 'photo:classification' user.id %}">
                     classification
                 </a>
+            </td>
+            <td>
                 <a href="{% url 'photo:reset' user.id %}">
                     reset
                 </a>
-            </li>
-            {% endfor %}
-        {% endif %}
-    </body>
-<html>
+            </td>
+        </tr>
+    </table>
+    {% endfor %}
+{% endblock %}

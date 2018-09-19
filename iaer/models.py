@@ -67,7 +67,7 @@ class RedEnvelope(models.Model):
     money = models.CharField(max_length=10, blank=True, null=True)
     money_type = models.IntegerField(default=0) # 0 for rmb, 1 for dollar
     money_from = models.CharField(max_length=100, blank=True, null=True)
-    remark = models.CharField(max_length=100, blank=True, null=True)
+    remark = models.CharField(max_length=100)
     created = models.DateTimeField(editable=False, blank=True, null=True)
 
 
@@ -86,7 +86,7 @@ class Iaer(models.Model):
     money = models.IntegerField()
     category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
     money_type = models.IntegerField(default=0)  # 0 for rmb, 1 for dollar
-    remark = models.CharField(max_length=100, blank=True, null=True)
+    remark = models.CharField(max_length=100)
     created = models.DateTimeField(editable=False, blank=True, null=True)
     type = models.IntegerField(default=0)
     chart_type = models.IntegerField(default=0)

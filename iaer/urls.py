@@ -10,6 +10,7 @@ from iaer.views.user_views import UserViewSet, login_view, send_verify_code_view
 from iaer.views.user_views import api_root
 
 # website
+from iaer.views.webviews import index
 from iaer.views.webviews import UserListView
 from iaer.views.webviews import IaerListView
 from iaer.views.webviews import IaerDeleteView
@@ -74,7 +75,8 @@ api_urlpatterns = [
 ]
 
 urlpatterns = [
-    path('users/', UserListView.as_view(), name='index'),
+    path('', index, name='index'),
+    path('users/', UserListView.as_view(), name='users'),
     path('users/<int:pk>/', IaerListView.as_view(), name='iaer-list'),
     path('iaers/add', IaerCreateView.as_view(), name='iaer-add'),
     path('iaers/<int:pk>/', IaerDetailView.as_view(), name='iaer-detail'),

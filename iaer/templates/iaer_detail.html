@@ -1,18 +1,14 @@
-<html>
-    <head>
-        <script src="http://demos.jquerymobile.com/1.4.5/js/jquery.js"></script>
-        <style type="text/css">
-        select, input{margin-top: 16px; margin-left: 16px; margin-right: 16px; width: 100%;}
-    </head>
-    <body>
-        <form action="{% url 'iaer:iaer-delete' object.id %}" method="post">{% csrf_token %}
-            <center>
-                <p>类别: {{object.category}}</p>
-                <p>金额: {{object.money}}</p>
-                <p>备注: {{object.remark}}</p>
-                <p>日期: {{object.created | date:'Y-m-d'}}</p></br>
-                <input id="submit" type="submit" value="删除" />
-            </center>
-        </form>
-    </body>
-</html>
+{% extends "iaer_base.html" %}
+{% block head %}
+{% endblock %}
+{% block body %}
+<form action="{% url 'iaer:iaer-delete' object.id %}" method="post">{% csrf_token %}
+    <center style="padding: 24px;">
+        <p>类别: {{object.category}}</p>
+        <p>金额: {{object.money}}</p>
+        <p>备注: {{object.remark}}</p>
+        <p>日期: {{object.created | date:'Y-m-d'}}</p></br>
+        <input id="submit" type="submit" value="删除" />
+    </center>
+</form>
+{% endblock %}

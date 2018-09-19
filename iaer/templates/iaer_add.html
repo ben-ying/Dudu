@@ -1,9 +1,11 @@
-{% extends "base.html" %}
+{% extends "iaer_base.html" %}
 {% block head %}
 {% endblock %}
 {% block body %}
 <form method="post">{% csrf_token %}
-    {{ form.as_p }}
-<input type="submit" id="submit" value="保存" />
+    <div style="padding: 24px;">
+        {{ form.as_p }}
+        <input type="submit" id="submit" value="保存" />
+    </div>
 </form>
 {% endblock %}

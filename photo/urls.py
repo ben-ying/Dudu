@@ -8,7 +8,7 @@ from django.conf import settings
 from .views import classification
 from .views import index
 from .views import reset
-from .views import users
+from .views import UserListView
 from .views import user_gallery
 
 from myproject.settings import BASE_DIR
@@ -16,9 +16,8 @@ from myproject.settings import BASE_DIR
 
 app_name = 'photo'
 urlpatterns = [
-    # todo remove after debug
     path('', index, name='index'),
-    path('users/', users, name='users'),
+    path('users/', UserListView.as_view(), name='users'),
     path('reset/<int:user_id>/', reset, name='reset'),
     path('classification/<int:user_id>/', classification, name='classification'),
     path('users/<int:user_id>/', user_gallery, name='user-gallery'),

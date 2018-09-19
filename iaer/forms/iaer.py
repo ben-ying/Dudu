@@ -5,7 +5,6 @@ from iaer.models import Iaer
 
 
 class IaerForm(forms.ModelForm):
-    remark = forms.CharField(required=True)
 
     class Meta:
         model = Iaer

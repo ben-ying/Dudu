@@ -2,6 +2,7 @@ import pdb
 
 from rest_framework.authtoken.models import Token
 from django.shortcuts import render
+from django.shortcuts import redirect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView
@@ -15,9 +16,12 @@ from iaer.utils import get_user_by_token
 from iaer.forms.iaer import IaerForm
 
 
+def index(request):
+    return redirect('iaer:users')
+
 class UserListView(ListView):
     model = User
-    template_name = 'index.html'
+    template_name = 'iaer_users.html'
 
 class IaerListView(ListView):
     model = Iaer
@@ -32,7 +36,7 @@ class IaerListView(ListView):
             return save_error_log(self.request, e)
 
 
-class IaerDetailView(DeleteView):
+class IaerDetailView(DetailView):
     model = Iaer
     template_name = 'iaer_detail.html'
 
