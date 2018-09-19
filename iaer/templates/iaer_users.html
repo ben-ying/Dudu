@@ -1,0 +1,14 @@
+{% extends "iaer_base.html" %}
+{% block head %}
+{% endblock %}
+{% block body %}
+<ul data-role="listview" data-inset="true" data-divider-theme="a">
+{% for user in object_list %}
+<li>
+    <a href="{% url 'iaer:iaer-list' user.id %}">
+        {{user.auth_user.username}}
+    </a>
+</li>
+{% endfor %}
+</ul>
+{% endblock %}
