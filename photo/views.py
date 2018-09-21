@@ -6,6 +6,7 @@ import shutil
 import photo
 import pdb
 
+from django.contrib import messages
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -13,6 +14,8 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView
 from django.views.generic.edit import DeleteView
+from django.views.generic.dates import YearArchiveView
+from django.views.generic.dates import MonthArchiveView
 from collections import defaultdict
 from collections import OrderedDict
 
@@ -28,22 +31,50 @@ from myproject.settings import PHOTO_APP_MEDIA_ROOT
 def index(request):
     return redirect('photo:users')
 
+
 class UserListView(ListView):
     model = User
     template_name = 'users.html'
 
-def user_gallery(request, user_id):
-    photo_dict = defaultdict(list)
-    photos = Photo.objects.filter(user__id = user_id)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    for photo in photos:
-        photo_dict[photo.get_sub_dir_description()].append(photo)
+        return context
 
-    context = {
-        'photo_dict': sorted(photo_dict.items(), key=lambda s: s[1][0].duration),
-    }
 
-    return render(request, 'user_gallery.html', context)
+class UserGalleryView(ListView):
+    template_name = 'user_gallery.html'
+    
+    def get_queryset(self):
+        return Photo.objects.filter(user__id = self.kwargs['pk']).order_by('duration')
+
+    def get_context_data(self, **kwargs):
+        photo_dict = defaultdict(list)
+        context = super().get_context_data(**kwargs)
+
+        for photo in context['photo_list']:
+            photo_dict[photo.get_sub_dir_description()].append(photo)
+
+        # sorted by key, default by alphabet (i.e. 8M > 10M)
+        context['photo_dict'] = sorted(photo_dict.items(), key=lambda s:s[1][0].duration)
+
+        return context
+
+
+class GalleryYearArchiveView(YearArchiveView):
+    model = Photo
+    template_name = 'date_archive_gallery.html'
+    date_field = 'exif_datetime_original'
+    make_object_list = True
+    allow_future = True
+
+
+class GalleryMonthArchiveView(MonthArchiveView):
+    model = Photo
+    template_name = 'date_archive_gallery.html'
+    date_field = 'exif_datetime_original'
+    make_object_list = True
+    allow_future = True
 
 
 def reset(request, user_id):
@@ -59,13 +90,17 @@ def reset(request, user_id):
                         os.path.join(SOURCE_PHOTO_FOLDER, os.path.basename(os.path.dirname(root)), f))
 
     Photo.objects.filter(user__id = user_id).delete()
-
     user_photo_dir = os.path.join(PHOTO_APP_MEDIA_ROOT, User.objects.get(id = user_id).auth_user.username)
-    if not os.path.isdir(user_photo_dir):
-        return HttpResponse("Already Reset: " + user_photo_dir)
 
-    shutil.rmtree(user_photo_dir)
-    return HttpResponse("RESET")
+    if not os.path.isdir(user_photo_dir):
+        message = '已经重置过了'
+    else:
+        shutil.rmtree(user_photo_dir)
+        message = '重置已完成'
+
+    messages.add_message(request, messages.INFO, message)
+
+    return redirect('photo:users')
 
 
 def classification(request, user_id):
@@ -75,22 +110,26 @@ def classification(request, user_id):
     username = User.objects.get(id = user_id).auth_user.username
 
     if not os.path.isdir(os.path.join(SOURCE_PHOTO_FOLDER, username)):
-        return HttpResponse("Dir not exists")
+        message = '用户图片目录不存在'
+    else:
+        n = 0
+        for root, directories, files in os.walk(os.path.join(SOURCE_PHOTO_FOLDER, username)):
+            total = len(files)
+            for file_name in files:
+                n += 1
+                print("detail", "========Executing " + str(n) + "/" + str(total) + "========")
+                file_path = os.path.join(root, file_name)
+                if file_path.lower().endswith("jpg") \
+                        or file_path.lower().endswith("jpeg"): 
+                    save_image(file_path, file_name, username)
+                else:
+                    print("Error file format " + file_name.split(".")[-1])
 
-    n = 0
-    for root, directories, files in os.walk(os.path.join(SOURCE_PHOTO_FOLDER, username)):
-        total = len(files)
-        for file_name in files:
-            n += 1
-            print("detail", "========Executing " + str(n) + "/" + str(total) + "========")
-            file_path = os.path.join(root, file_name)
-            if file_path.lower().endswith("jpg") \
-                    or file_path.lower().endswith("jpeg"): 
-                save_image(file_path, file_name, username)
-            else:
-                print("Error file format " + file_name.split(".")[-1])
+    message = '初始化已完成'
+    messages.add_message(request, messages.INFO, message)
 
-    return HttpResponse("OK")
+    return redirect('photo:users')
+
 
 def save_image(file_path, file_name, username):
     user = User.objects.get(auth_user__username = username)

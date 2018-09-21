@@ -1,0 +1,17 @@
+{% extends "user_gallery.html" %}
+{% load static %}
+{% block content %}        
+    <div id="lightgallery">
+        {% for photo in object_list %}
+        <a id="{{photo.get_age_description}}" href="{{ photo.get_image_url }}">
+            <img src="{{ photo.get_thumbnail_url }}" />
+        </a>
+        {% endfor %}
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#lightgallery").lightGallery(); 
+        });
+    </script>
+{% endblock %}

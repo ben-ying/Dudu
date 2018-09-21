@@ -482,7 +482,11 @@
     Plugin.prototype.counter = function() {
         if (this.s.counter) {
             $(this.s.appendCounterTo).append('<div id="lg-counter"><span id="lg-counter-current">' + (parseInt(this.index, 10) + 1) + '</span> / <span id="lg-counter-all">' + this.$items.length + '</span></div>');
-            $(this.s.appendCounterTo).append('<div id="lg-date"><span>' + this.$items[parseInt(this.index, 10)].id + ' (' + this.$items[parseInt(this.index, 10)].name + ')</span></div>');
+            if (this.$items[parseInt(this.index, 10)].name) {
+                $(this.s.appendCounterTo).append('<div id="lg-date"><span>' + this.$items[parseInt(this.index, 10)].id + ' (' + this.$items[parseInt(this.index, 10)].name + ')</span></div>');
+            } else {
+                $(this.s.appendCounterTo).append('<div id="lg-date"><span>' + this.$items[parseInt(this.index, 10)].id + '</span></div>');
+            }
         }
     };
 

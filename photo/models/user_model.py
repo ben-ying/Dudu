@@ -1,5 +1,7 @@
 from django.db import models
 
+from collections import defaultdict
+
 
 class UserQuerySet(models.QuerySet):
     def boys(self):
@@ -40,6 +42,17 @@ class User(models.Model):
     
     objects = models.Manager()
     user = UserManager()
+
+    def get_date_dict(self):
+        date_dict = defaultdict(list)
+        photos = self.photos.order_by('exif_datetime_original').distinct('exif_datetime_original')
+
+        for photo in photos:
+            # remove duplicated month
+            if not date_dict or not photo.exif_datetime_original.month in date_dict.get(photo.exif_datetime_original.year):
+                date_dict[photo.exif_datetime_original.year].append(photo.exif_datetime_original.month)
+
+        return date_dict.items()
 
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)

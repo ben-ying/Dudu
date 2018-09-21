@@ -1,24 +1,39 @@
 {% extends "base.html" %}
+
+
 {% block content %}        
+    {% for message in messages %}
+    <div>{{ message }}</div>
+    {% endfor %}
     {% for user in object_list %}
     <table width="100%">
         <tr>
-            <td>
-                <a href="{% url 'photo:user-gallery' user.id%}">
+            <td style="font-size: 24px;">
+                <a href="{% url 'photo:user-gallery' user.id%} ">
                     {{user.auth_user.username}}
                 </a>
             </td>
-            <td>
+            <td style="font-size: 24px;">
                 <a href="{% url 'photo:classification' user.id %}">
-                    classification
+                    初始化
                 </a>
             </td>
-            <td>
+            <td style="font-size: 24px;">
                 <a href="{% url 'photo:reset' user.id %}">
-                    reset
+                    重置
                 </a>
             </td>
         </tr>
     </table>
+        {% for year, months in user.get_date_dict %}
+            <a href="{% url 'photo:gallery-year-archive' user.id year %}">
+                <div style="font-size: 20px; padding: 8px 0px 0px 0px;">{{year}}年</div>
+            </a>
+            {% for month in months %}
+                <a href="{% url 'photo:gallery-month-archive' user.id year month %}">
+                    <li style="padding: 8px 0px 0px 0px;">{{year}}年{{month}}月</li>
+                </a>
+            {% endfor %}
+        {% endfor %}</br>
     {% endfor %}
 {% endblock %}
