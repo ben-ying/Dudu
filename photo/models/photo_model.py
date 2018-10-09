@@ -10,6 +10,7 @@ from datetime import datetime
 from shutil import copyfile
 from django.contrib.postgres.fields import ArrayField
 from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 
 from .abstract_model import Exif
 from .user_model import User
@@ -68,7 +69,7 @@ class Photo(Exif):
         elif self.size / 1024 / 1024 / 1024 / 1024 < 1:
             return "{:.1f}".format(self.size / 1024 / 1024 / 1024) + "GB"
 
-    get_read_size.short_description = 'Size'
+    get_read_size.short_description = 'size'
     
     def get_sub_dir_description(self):
         return self.sub_dir.replace("M", "个月").replace("Y", "岁")
@@ -110,8 +111,10 @@ class Photo(Exif):
         self._save_default_thumbnail_image()
         super(Photo, self).save(*args, **kwargs)
 
-    def thumbnail(self):
-        return mark_safe('<img src="%s" width="100px" />' % self.get_thumbnail_url())
+    def url_link(self):
+        return format_html("<a href='{url}'>{thumbnail}</a>",
+                url=self.get_image_url(), thumbnail=mark_safe('<img src="%s" />' % self.get_thumbnail_url()))
+    url_link.short_description = 'url'
     
     def _get_relativedelta(self):
         return relativedelta(datetime.strptime(
