@@ -20,6 +20,7 @@ from collections import defaultdict
 from collections import OrderedDict
 
 from .models.photo_model import Photo
+from .models.photo_model import Gallery
 from .models.photo_model import THUMBNAIL_DIR
 from .models.user_model import User
 from myproject.settings import SOURCE_PHOTO_FOLDER
@@ -38,6 +39,7 @@ class UserListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['galleries'] = Gallery.objects.all()
 
         return context
 
