@@ -2,6 +2,8 @@ from django.db import models
 
 from collections import defaultdict
 
+from .abstract_model import DATE_FORMAT_CHOICES
+
 
 class UserQuerySet(models.QuerySet):
     def boys(self):
@@ -27,6 +29,7 @@ class User(models.Model):
     phone = models.CharField(max_length=30, blank=True, null=True)
     gender = models.PositiveSmallIntegerField(default=2) #0 for boy, 1 for girl, 2 for others
     profile = models.CharField(max_length=200, blank=True, null=True)
+    date_format = models.CharField(max_length=50, choices=DATE_FORMAT_CHOICES)
     user_type = models.PositiveSmallIntegerField(default=0)
     region = models.CharField(max_length=100, blank=True, null=True)
     locale = models.CharField(max_length=10, blank=True, null=True)

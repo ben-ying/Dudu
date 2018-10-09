@@ -1,6 +1,13 @@
 from django.db import models
 
 
+DATE_FORMAT_CHOICES = (
+            (u'0', u'不显示'),
+            (u'1', u'显示日期'),
+            (u'2', u'显示年龄'),
+            (u'3', u'显示日期和年龄'),
+        )
+
 class Exif(models.Model):
     exif_image_width = models.PositiveSmallIntegerField('image width', blank=True, null=True)
     exif_image_height = models.PositiveSmallIntegerField('image height', blank=True, null=True)

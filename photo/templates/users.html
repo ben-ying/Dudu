@@ -35,11 +35,11 @@
                 </a>
             {% endfor %}
         {% endfor %}</br>
-        相册:
-        {% for gallery in galleries %}
-            <a href="">
-                <li style="padding: 8px 0px 0px 0px;">{{gallery.name}}</li>
-            </a>
-        {% endfor %}</br>
     {% endfor %}
+    <div style="font-size: 20px; padding: 8px 0px 0px 0px;">相册:</div>
+    {% for gallery in galleries %}
+        <a href="{% url 'photo:gallery' gallery.title %}">
+            <li style="padding: 8px 0px 0px 0px;">{{gallery.title}}</li>
+        </a>
+    {% endfor %}</br>
 {% endblock %}

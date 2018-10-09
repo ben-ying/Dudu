@@ -44,6 +44,14 @@ class UserListView(ListView):
         return context
 
 
+class GalleryView(ListView):
+    model = Photo
+    template_name = 'gallery.html'
+
+    def get_queryset(self):
+        return Photo.objects.filter(galleries__title = self.kwargs['title'])
+
+
 class UserGalleryView(ListView):
     template_name = 'user_gallery.html'
     

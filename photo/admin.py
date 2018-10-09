@@ -22,7 +22,7 @@ class UserAdmin(admin.ModelAdmin):
 admin.site.register(User, UserAdmin)
 
 class GalleryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description')
-    search_fields = ('name', 'description')
+    list_display = ('title', 'date_format', 'description')
+    search_fields = ('title', 'date_format', 'description')
 
 admin.site.register(Gallery, GalleryAdmin)

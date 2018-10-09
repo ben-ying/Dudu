@@ -13,6 +13,7 @@ from django.utils.safestring import mark_safe
 from django.utils.html import format_html
 
 from .abstract_model import Exif
+from .abstract_model import DATE_FORMAT_CHOICES
 from .user_model import User
 from myproject.settings import MEDIA_URL
 from myproject.settings import PHOTO_APP_MEDIA_URL
@@ -152,8 +153,9 @@ class Photo(Exif):
 
 
 class Gallery(models.Model):
-    name = models.CharField('name', max_length=50)
+    title = models.CharField('name', max_length=50)
+    date_format = models.CharField(max_length=50, choices=DATE_FORMAT_CHOICES)
     description = models.TextField('description', max_length=1024, blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.title
