@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 from .models.photo_model import Photo
+from .models.photo_model import Gallery
 from .models.user_model import User
 
 
@@ -16,3 +17,9 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ('auth_user', 'phone')
 
 admin.site.register(User, UserAdmin)
+
+class GalleryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description')
+    search_fields = ('name', 'description')
+
+admin.site.register(Gallery, GalleryAdmin)

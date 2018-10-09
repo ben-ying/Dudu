@@ -26,7 +26,7 @@ class Photo(Exif):
     user = models.ForeignKey(User, verbose_name='user', related_name='photos', blank=True, null=True, on_delete=models.CASCADE)
     name = models.CharField('name', max_length=50)
     size = models.PositiveIntegerField('size', default = 0)
-    group = models.ForeignKey('Group', on_delete=models.CASCADE, blank=True, null=True)
+    galleries = models.ManyToManyField('Gallery', blank=True, null=True)
     labels = ArrayField(models.CharField('label', max_length=50), blank=True, null=True)
     sub_dir = models.CharField('sub_dir', max_length = 10)
     duration = models.DurationField('duration')
@@ -151,7 +151,7 @@ class Photo(Exif):
         return self.name
 
 
-class Group(models.Model):
+class Gallery(models.Model):
     name = models.CharField('name', max_length=50)
     description = models.TextField('description', max_length=1024, blank=True, null=True)
 
