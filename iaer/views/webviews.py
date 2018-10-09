@@ -51,12 +51,12 @@ class IaerCreateView(CreateView):
     def form_valid(self, form):
         if form.is_valid():
             try:
-                category = self.request.POST.get('category')
+                category = form.cleaned_data['category']
                 if category == '收入':
-                    money = int(self.request.POST.get('money'))
+                    money = form.cleaned_data['money']
                 else:
-                    money = 0 - int(self.request.POST.get('money'))
-                remark = self.request.POST.get('remark')
+                    money = 0 - form.cleaned_data['money']
+                remark = form.cleaned_data['remark']
                 token = self.request.session['token']
                 user = get_user_by_token(token)
 

@@ -9,6 +9,7 @@ from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from shutil import copyfile
 from django.contrib.postgres.fields import ArrayField
+from django.utils.safestring import mark_safe
 
 from .abstract_model import Exif
 from .user_model import User
@@ -108,6 +109,9 @@ class Photo(Exif):
             self.exif_image_width, self.exif_image_height = im.size
         self._save_default_thumbnail_image()
         super(Photo, self).save(*args, **kwargs)
+
+    def thumbnail(self):
+        return mark_safe('<img src="%s" width="100px" />' % self.get_thumbnail_url())
     
     def _get_relativedelta(self):
         return relativedelta(datetime.strptime(
