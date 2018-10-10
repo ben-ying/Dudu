@@ -9,12 +9,70 @@
 
     <script src="{% static 'js/lightgallery-all.js' %}"></script>
 
+    <!-- Image Picker -->
+    <link type="text/css" rel="stylesheet" href="{% static 'css/image-picker.css' %}" /> 
+    <script src="{% static 'js/image-picker.js' %}"></script>
+
     <!-- lightgallery plugins -->
     <script src="{% static 'js/lg-thumbnail.js' %}"></script>
     <script src="{% static 'js/lg-fullscreen.js' %}"></script>
+
+    <!-- jquery dialog -->
+    <script src="{% static 'js/jquery-ui-1.12.1.js' %}"></script>
+    <link type="text/css" rel="stylesheet" href="{% static 'css/jquery-ui-1.12.1.css' %}" /> 
+
+    <script>
+        $( function() {
+            var dialog, form;
+            dialog = $("#dialog-form").dialog({
+                autoOpen: false,
+                height: 720,
+                width: "80%",
+                modal: true,
+                buttons: {
+                    "Create an account": addUser,
+                    Cancel: function() {
+                        dialog.dialog("close");
+                    }
+                },
+                close: function() {
+                    form[0].reset();
+                }
+            });
+            form = dialog.find("form").on("submit", function(event) {
+                event.preventDefault();
+                addUser();
+            });
+            $("#add-image").button().on("click", function() {
+                dialog.dialog("open");
+            });
+        });
+        function addUser() {
+            return true;
+        }
+        $("select").imagepicker({
+            hide_select: true
+        });
+    </script>
 {% endblock %}
 {% block content %}        
     <h1>{{title}}</h1>
+    <button id="add-image">添加照片</button>
+    <div id="dialog-form" title="Create new user">
+        <p class="validateTips">All form fields are required.</p>
+
+        <form>
+            <fieldset>
+                <div class="picker">
+                <select multiple="multiple" class="image-picker show-html">
+                {% for photo in photos %}
+                <option data-img-src="{{photo.get_thumbnail_url}}" value="{{forloop.counter}}">{{photo.name}}</option>
+                {% endfor %}
+                </select>
+                </div>
+            </fieldset>
+        </form>
+    </div>
     <div id="lightgallery">
         {% for photo in object_list %}
         <a id="{{photo.exif_datetime_original | date:'Y-m-d'}}" name="{{photo.get_age_description}}" href="{{ photo.get_image_url }}">
@@ -25,7 +83,6 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $("#lightgallery").lightGallery(); 
         });
     </script>
 {% endblock %}
