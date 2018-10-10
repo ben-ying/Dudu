@@ -51,6 +51,12 @@ class GalleryView(ListView):
     def get_queryset(self):
         return Photo.objects.filter(galleries__title = self.kwargs['title'])
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.kwargs['title']
+
+        return context
+
 
 class UserGalleryView(ListView):
     template_name = 'user_gallery.html'
@@ -67,6 +73,7 @@ class UserGalleryView(ListView):
 
         # sorted by key, default by alphabet (i.e. 8M > 10M)
         context['photo_dict'] = sorted(photo_dict.items(), key=lambda s:s[1][0].duration)
+        context['title'] = User.objects.get(id = self.kwargs['pk']).auth_user.username
 
         return context
 
@@ -78,6 +85,13 @@ class GalleryYearArchiveView(YearArchiveView):
     make_object_list = True
     allow_future = True
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = str(self.kwargs['year']) + '(' + \
+                User.objects.get(id = self.kwargs['pk']).auth_user.username + ')'
+
+        return context
+
 
 class GalleryMonthArchiveView(MonthArchiveView):
     model = Photo
@@ -85,6 +99,14 @@ class GalleryMonthArchiveView(MonthArchiveView):
     date_field = 'exif_datetime_original'
     make_object_list = True
     allow_future = True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = str(self.kwargs['year']) + \
+                '.'+ str(self.kwargs['month']) + '(' + \
+                User.objects.get(id = self.kwargs['pk']).auth_user.username + ')'
+
+        return context
 
 
 def reset(request, user_id):

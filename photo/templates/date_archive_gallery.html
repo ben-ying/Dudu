@@ -1,6 +1,7 @@
 {% extends "user_gallery.html" %}
 {% load static %}
 {% block content %}        
+    <h1>{{title}}</h1>
     <div id="lightgallery">
         {% for photo in object_list %}
         <a id="{{photo.get_age_description}}" href="{{ photo.get_image_url }}">

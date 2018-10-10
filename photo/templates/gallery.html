@@ -14,6 +14,7 @@
     <script src="{% static 'js/lg-fullscreen.js' %}"></script>
 {% endblock %}
 {% block content %}        
+    <h1>{{title}}</h1>
     <div id="lightgallery">
         {% for photo in object_list %}
         <a id="{{photo.exif_datetime_original | date:'Y-m-d'}}" name="{{photo.get_age_description}}" href="{{ photo.get_image_url }}">
