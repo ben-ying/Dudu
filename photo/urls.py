@@ -13,6 +13,7 @@ from .views import PhotoListView
 from .views import PhotoYearArchiveView
 from .views import PhotoMonthArchiveView
 from .views import GalleryView
+from .views import GalleryListView
 
 from myproject.settings import BASE_DIR
 
@@ -26,5 +27,6 @@ urlpatterns = [
     path('users/<int:pk>/', PhotoListView.as_view(), name='user-gallery'),
     path('users/<int:pk>/<int:year>/', PhotoYearArchiveView.as_view(), name='gallery-year-archive'),
     path('users/<int:pk>/<int:year>/<int:month>/', PhotoMonthArchiveView.as_view(month_format='%m'), name='gallery-month-archive'),
+    path('galleries/', GalleryListView.as_view(), name='galleries'),
     path('galleries/<slug:title>/', GalleryView.as_view(), name='gallery'),
 ] + static(settings.MEDIA_URL, document_root=os.path.join(BASE_DIR, 'photo', 'media'))

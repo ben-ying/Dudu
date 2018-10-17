@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}        
+    <link type="text/css" rel="stylesheet" href="{% static 'css/lightgallery.css' %}" /> 
+
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <!-- A jQuery plugin that adds cross-browser mouse wheel support. (Optional) -->
+    <script src="{% static 'js/jquery.mousewheel.min.js' %}"></script>
+
+    <script src="{% static 'js/lightgallery-all.js' %}"></script>
+
+    <!-- lightgallery plugins -->
+    <script src="{% static 'js/lg-thumbnail.js' %}"></script>
+    <script src="{% static 'js/lg-fullscreen.js' %}"></script>
+{% endblock %}
+{% block content %}        
+    {% for gallery in object_list %}
+    <div>{{gallery.title}}</div>
+    <div id="lightgallery{{gallery.title}}">
+        {% for photo in gallery.photo_set.all %}
+        {% if gallery.date_format == "1" %}
+        <a id="{{photo.exif_datetime_original}}" href="{{ photo.get_image_url }}">
+        {% elif gallery.date_format == "2" %}
+        <a id="{{photo.get_age_description}}" href="{{ photo.get_image_url }}">
+        {% elif gallery.date_format == "3" %}
+        <a id="{{photo.exif_datetime_original}}" name="{{photo.get_age_description}}" href="{{ photo.get_image_url }}">
+        {% else %}
+        <a href="{{ photo.get_image_url }}">
+        {% endif %}
+            <img src="{{ photo.get_thumbnail_url }}" />
+        </a>
+        {% endfor %}
+    </div>
+    {% endfor %}
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            {% for gallery in object_list %}
+                $("#lightgallery{{gallery.title}}").lightGallery(); 
+            {% endfor %}
+        });
+    </script>
+{% endblock %}

@@ -44,38 +44,6 @@ class UserListView(ListView):
         return context
 
 
-class GalleryView(ListView):
-    model = Photo
-    template_name = 'gallery.html'
-
-    def get_queryset(self):
-        return Photo.objects.filter(galleries__title = self.kwargs['title'])
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = self.kwargs['title']
-        context['gallery'] = Gallery.objects.get(title = self.kwargs['title'])
-        context['other_photos'] = Photo.objects.exclude(galleries__title = self.kwargs['title'])
-
-        return context
-    
-    def post(self, request, *args, **kwargs):
-        photo_ids = request.POST.get('selected_images')
-        gallery_title = self.kwargs['title']
-        gallery = Gallery.objects.get(title = gallery_title)
-
-        for photo in self.get_queryset():
-            photo.galleries.remove(gallery)
-            photo.save()
-
-        for photo_id in photo_ids.split(','):
-            photo = Photo.objects.get(pk = photo_id)
-            photo.galleries.add(gallery)
-            photo.save()
-
-        return redirect('photo:gallery', title = gallery_title)
-
-
 class PhotoListView(ListView):
     template_name = 'user_gallery.html'
     
@@ -127,6 +95,43 @@ class PhotoMonthArchiveView(MonthArchiveView):
                 User.objects.get(id = self.kwargs['pk']).auth_user.username + ')'
 
         return context
+
+
+class GalleryView(ListView):
+    model = Photo
+    template_name = 'gallery.html'
+
+    def get_queryset(self):
+        return Photo.objects.filter(galleries__title = self.kwargs['title'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.kwargs['title']
+        context['gallery'] = Gallery.objects.get(title = self.kwargs['title'])
+        context['other_photos'] = Photo.objects.exclude(galleries__title = self.kwargs['title'])
+
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        photo_ids = request.POST.get('selected_images')
+        gallery_title = self.kwargs['title']
+        gallery = Gallery.objects.get(title = gallery_title)
+
+        for photo in self.get_queryset():
+            photo.galleries.remove(gallery)
+            photo.save()
+
+        for photo_id in photo_ids.split(','):
+            photo = Photo.objects.get(pk = photo_id)
+            photo.galleries.add(gallery)
+            photo.save()
+
+        return redirect('photo:gallery', title = gallery_title)
+
+
+class GalleryListView(ListView):
+    template_name = 'galleries.html'
+    model = Gallery
 
 
 def reset(request, user_id):
