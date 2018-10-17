@@ -80,7 +80,7 @@ class PhotoListView(ListView):
     template_name = 'user_gallery.html'
     
     def get_queryset(self):
-        return Photo.objects.filter(user__id = self.kwargs['pk']).order_by('duration')
+        return Photo.objects.filter(user__id = self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
         photo_dict = defaultdict(list)
@@ -100,6 +100,7 @@ class PhotoYearArchiveView(YearArchiveView):
     model = Photo
     template_name = 'date_archive_gallery.html'
     date_field = 'exif_datetime_original'
+    ordering = 'exif_datetime_original'
     make_object_list = True
     allow_future = True
 
@@ -115,6 +116,7 @@ class PhotoMonthArchiveView(MonthArchiveView):
     model = Photo
     template_name = 'date_archive_gallery.html'
     date_field = 'exif_datetime_original'
+    ordering = 'exif_datetime_original'
     make_object_list = True
     allow_future = True
 
