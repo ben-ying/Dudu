@@ -22,54 +22,86 @@
     <link type="text/css" rel="stylesheet" href="{% static 'css/jquery-ui-1.12.1.css' %}" /> 
 
     <script>
-        $( function() {
+        $(function() {
             var dialog, form;
+
             dialog = $("#dialog-form").dialog({
                 autoOpen: false,
                 height: 720,
                 width: "80%",
                 modal: true,
                 buttons: {
-                    "Create an account": addUser,
-                    Cancel: function() {
-                        dialog.dialog("close");
+                    "确定": addImages,
+                    "取消": function() {
+                        resetImagePicker();
                     }
                 },
                 close: function() {
-                    form[0].reset();
+                    resetImagePicker();
                 }
             });
+
             form = dialog.find("form").on("submit", function(event) {
-                event.preventDefault();
-                addUser();
             });
+
             $("#add-image").button().on("click", function() {
                 dialog.dialog("open");
             });
-        });
-        function addUser() {
-            return true;
-        }
-        $("select").imagepicker({
-            hide_select: true
+
+            function addImages() {
+                var selected_images = $("div[class='thumbnail selected']").children('img');
+                for (var i = 0; i < selected_images.length; i++) {
+                    var selected_val = $("#selected_images").val();
+                    if (selected_val) {
+                        $("#selected_images").val(selected_val + "," + selected_images[i].alt);
+                    } else {
+                        $("#selected_images").val(selected_images[i].alt);
+                    }
+                }
+
+                resetImagePicker();
+                if (selected_images.length > 0) {
+                    form.submit();
+                }
+
+                return true;
+            }
+
+            function resetImagePicker() {
+                form[0].reset();
+                $("select").imagepicker({
+                    hide_select: true,
+                    show_label: false,
+                    initialized: undefined,
+                    changed: undefined,
+                    clicked: undefined,
+                    selected: undefined,
+                });
+
+                dialog.dialog("close");
+            }
+
+            resetImagePicker();
+
+            $("#lightgallery").lightGallery(); 
         });
     </script>
 {% endblock %}
 {% block content %}        
     <h1>{{title}}</h1>
-    <button id="add-image">添加照片</button>
-    <div id="dialog-form" title="Create new user">
-        <p class="validateTips">All form fields are required.</p>
-
-        <form>
+    <button id="add-image">编辑照片</button></br></br>
+    <div id="dialog-form" title="编辑照片">
+        <form method="post">{% csrf_token %}
+            <input type="hidden" name="selected_images" id="selected_images" value="" />
             <fieldset>
-                <div class="picker">
-                <select multiple="multiple" class="image-picker show-html">
-                {% for photo in photos %}
-                <option data-img-src="{{photo.get_thumbnail_url}}" value="{{forloop.counter}}">{{photo.name}}</option>
-                {% endfor %}
+                <select multiple="multiple" class="image-picker">
+                    {% for photo in object_list %}
+                    <option data-img-alt="{{photo.id}}" data-img-src="{{photo.get_thumbnail_url}}" value="{{photo.id}}" selected="selected">{{photo.name}}</option>
+                    {% endfor %}
+                    {% for photo in other_photos %}
+                    <option class="thumbnail selected" data-img-alt="{{photo.id}}" data-img-src="{{photo.get_thumbnail_url}}" value="{{photo.id}}">{{photo.name}}</option>
+                    {% endfor %}
                 </select>
-                </div>
             </fieldset>
         </form>
     </div>
@@ -80,9 +112,4 @@
         </a>
         {% endfor %}
     </div>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-        });
-    </script>
 {% endblock %}

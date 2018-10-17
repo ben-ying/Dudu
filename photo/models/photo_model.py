@@ -27,7 +27,7 @@ class Photo(Exif):
     user = models.ForeignKey(User, verbose_name='user', related_name='photos', blank=True, null=True, on_delete=models.CASCADE)
     name = models.CharField('name', max_length=50)
     size = models.PositiveIntegerField('size', default = 0)
-    galleries = models.ManyToManyField('Gallery', blank=True, null=True)
+    galleries = models.ManyToManyField('Gallery', blank=True)
     labels = ArrayField(models.CharField('label', max_length=50), blank=True, null=True)
     sub_dir = models.CharField('sub_dir', max_length = 10)
     duration = models.DurationField('duration')
@@ -37,6 +37,9 @@ class Photo(Exif):
     description = models.TextField('description', max_length=1024, blank=True, null=True)
     pub_date = models.DateTimeField('date published', auto_now_add=True)
     modify_date = models.DateTimeField('date modified', auto_now=True)
+
+    class Meta:
+        ordering = ['exif_datetime_original']
 
     def get_username(self):
         if self.user:
@@ -153,7 +156,7 @@ class Photo(Exif):
 
 
 class Gallery(models.Model):
-    title = models.CharField('name', max_length=50)
+    title = models.CharField('name', max_length=50, unique=True)
     date_format = models.CharField(max_length=50, choices=DATE_FORMAT_CHOICES)
     description = models.TextField('description', max_length=1024, blank=True, null=True)
 
