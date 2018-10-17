@@ -24,7 +24,6 @@ urlpatterns = [
     path('reset/<int:user_id>/', reset, name='reset'),
     path('classification/<int:user_id>/', classification, name='classification'),
     path('users/<int:pk>/', UserGalleryView.as_view(), name='user-gallery'),
-    path('users/<int:pk>/', UserGalleryView.as_view(), name='user-gallery'),
     path('users/<int:pk>/<int:year>/', GalleryYearArchiveView.as_view(), name='gallery-year-archive'),
     path('users/<int:pk>/<int:year>/<int:month>/', GalleryMonthArchiveView.as_view(month_format='%m'), name='gallery-month-archive'),
     path('galleries/<slug:title>/', GalleryView.as_view(), name='gallery'),

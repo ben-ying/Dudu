@@ -98,9 +98,9 @@ class Photo(Exif):
         self.duration = self._get_timedelta() 
 
         if delta.years == 0:
-            dest_sub_dir = str(delta.months + 1) + "M"
+            dest_sub_dir = str(delta.months) + "M"
         else:
-            dest_sub_dir = str(delta.years + 1) + "Y"
+            dest_sub_dir = str(delta.years) + "Y"
 
         self.sub_dir = dest_sub_dir
 
@@ -157,7 +157,7 @@ class Photo(Exif):
 
 class Gallery(models.Model):
     title = models.CharField('name', max_length=50, unique=True)
-    date_format = models.CharField(max_length=50, choices=DATE_FORMAT_CHOICES)
+    date_format = models.CharField(max_length=50, choices=DATE_FORMAT_CHOICES, default='0')
     description = models.TextField('description', max_length=1024, blank=True, null=True)
 
     def __str__(self):

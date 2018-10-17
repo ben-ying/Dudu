@@ -90,7 +90,7 @@
 {% block content %}        
     <h1>{{title}}</h1>
     <button id="add-image">编辑照片</button></br></br>
-    <div id="dialog-form" title="编辑照片">
+    <div id="dialog-form" title="编辑照片" style="display: none;">
         <form method="post">{% csrf_token %}
             <input type="hidden" name="selected_images" id="selected_images" value="" />
             <fieldset>
@@ -107,7 +107,15 @@
     </div>
     <div id="lightgallery">
         {% for photo in object_list %}
-        <a id="{{photo.exif_datetime_original | date:'Y-m-d'}}" name="{{photo.get_age_description}}" href="{{ photo.get_image_url }}">
+        {% if gallery.date_format == "1" %}
+        <a id="{{photo.exif_datetime_original}}" href="{{ photo.get_image_url }}">
+        {% elif user.date_format == "2" %}
+        <a id="{{photo.get_age_description}}" href="{{ photo.get_image_url }}">
+        {% elif user.date_format == "3" %}
+        <a id="{{photo.exif_datetime_original}}" name="{{photo.get_age_description}}" href="{{ photo.get_image_url }}">
+        {% else %}
+        <a href="{{ photo.get_image_url }}">
+        {% endif %}
             <img src="{{ photo.get_thumbnail_url }}" />
         </a>
         {% endfor %}

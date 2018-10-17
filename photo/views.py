@@ -54,6 +54,7 @@ class GalleryView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.kwargs['title']
+        context['gallery'] = Gallery.objects.get(title = self.kwargs['title'])
         context['other_photos'] = Photo.objects.exclude(galleries__title = self.kwargs['title'])
 
         return context
@@ -90,7 +91,7 @@ class UserGalleryView(ListView):
 
         # sorted by key, default by alphabet (i.e. 8M > 10M)
         context['photo_dict'] = sorted(photo_dict.items(), key=lambda s:s[1][0].duration)
-        context['title'] = User.objects.get(id = self.kwargs['pk']).auth_user.username
+        context['user'] = User.objects.get(pk = self.kwargs['pk'])
 
         return context
 
