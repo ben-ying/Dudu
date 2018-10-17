@@ -1,0 +1,23 @@
+{% extends "user_gallery.html" %}
+{% load static %}
+{% block content %}        
+    <h1>{{user.auth_user.username}}</h1>
+    <div id="lightgallery">
+        {% for d in date_list %}
+            <div>{{d|date:"M, Y"}}</div>
+            {% for photo in object_list %}
+            {% if photo.exif_datetime_original.month == d.month %}
+                <a id="{{photo.exif_datetime_original}}" href="{{ photo.get_image_url }}">
+                    <img src="{{ photo.get_thumbnail_url }}" />
+                </a>
+            {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#lightgallery").lightGallery(); 
+        });
+    </script>
+{% endblock %}

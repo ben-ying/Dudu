@@ -66,7 +66,7 @@ class PhotoListView(ListView):
 
 class PhotoYearArchiveView(YearArchiveView):
     model = Photo
-    template_name = 'date_archive_gallery.html'
+    template_name = 'year_archive_gallery.html'
     date_field = 'exif_datetime_original'
     ordering = 'exif_datetime_original'
     make_object_list = True
@@ -74,15 +74,14 @@ class PhotoYearArchiveView(YearArchiveView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = str(self.kwargs['year']) + '(' + \
-                User.objects.get(id = self.kwargs['pk']).auth_user.username + ')'
+        context['user'] = User.objects.get(pk = self.kwargs['pk'])
 
         return context
 
 
 class PhotoMonthArchiveView(MonthArchiveView):
     model = Photo
-    template_name = 'date_archive_gallery.html'
+    template_name = 'month_archive_gallery.html'
     date_field = 'exif_datetime_original'
     ordering = 'exif_datetime_original'
     make_object_list = True
@@ -90,9 +89,7 @@ class PhotoMonthArchiveView(MonthArchiveView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = str(self.kwargs['year']) + \
-                '.'+ str(self.kwargs['month']) + '(' + \
-                User.objects.get(id = self.kwargs['pk']).auth_user.username + ')'
+        context['user'] = User.objects.get(pk = self.kwargs['pk'])
 
         return context
 

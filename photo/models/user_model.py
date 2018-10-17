@@ -52,10 +52,18 @@ class User(models.Model):
 
         for photo in photos:
             # remove duplicated month
-            if not date_dict or not photo.exif_datetime_original.month in date_dict.get(photo.exif_datetime_original.year):
-                date_dict[photo.exif_datetime_original.year].append(photo.exif_datetime_original.month)
+            if not date_dict or not date_dict.get(photo.exif_datetime_original.year):
+                date_dict[photo.exif_datetime_original.year].append(photo.exif_datetime_original)
+            else:
+                for date in date_dict.get(photo.exif_datetime_original.year):
+                    if photo.exif_datetime_original.month == date.month:
+                        break;
+                    date_dict[photo.exif_datetime_original.year].append(photo.exif_datetime_original)
 
         return date_dict.items()
+
+    def get_date(self, year, month):
+        return "test111"
 
     def save(self, *args, **kwargs):
         super(User, self).save(*args, **kwargs)

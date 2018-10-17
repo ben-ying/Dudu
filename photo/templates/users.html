@@ -1,5 +1,24 @@
 {% extends "base.html" %}
 
+{% block head %}
+<style type="text/css">
+a {
+    text-decoration: none;
+}
+
+tr td {
+    font-size: 24px; padding: 8px 0px 0px 0px; width: 40%;
+}
+
+a li {
+    padding: 8px 0px 0px 0px;
+}
+
+a div {
+    font-size: 20px; padding: 8px 0px 0px 0px;
+}
+</style>
+{% endblock %}
 
 {% block content %}        
     {% for message in messages %}
@@ -8,40 +27,40 @@
     {% for user in object_list %}
     <table width="100%">
         <tr>
-            <td style="font-size: 24px;">
-                <a href="{% url 'photo:user-gallery' user.id%} ">
+            <td>
+                <a href="{% url 'photo:user-gallery' user.id%}">
                     {{user.auth_user.username}}
                 </a>
             </td>
-            <td style="font-size: 24px;">
+            <td>
                 <a href="{% url 'photo:classification' user.id %}">
-                    初始化
+                    Init
                 </a>
             </td>
-            <td style="font-size: 24px;">
+            <td>
                 <a href="{% url 'photo:reset' user.id %}">
-                    重置
+                    Reset
                 </a>
             </td>
         </tr>
     </table>
-        {% for year, months in user.get_date_dict %}
-            <a href="{% url 'photo:gallery-year-archive' user.id year %}">
-                <div style="font-size: 20px; padding: 8px 0px 0px 0px;">{{year}}年</div>
+    {% for year, dates in user.get_date_dict %}
+        <a href="{% url 'photo:gallery-year-archive' user.id year %}">
+            <div>{{year}}</div>
+        </a>
+        {% for d in dates %}
+            <a href="{% url 'photo:gallery-month-archive' user.id year d.month %}">
+                <li>{{d|date:'M, Y'}}</li>
             </a>
-            {% for month in months %}
-                <a href="{% url 'photo:gallery-month-archive' user.id year month %}">
-                    <li style="padding: 8px 0px 0px 0px;">{{year}}年{{month}}月</li>
-                </a>
-            {% endfor %}
-        {% endfor %}</br>
+        {% endfor %}
+    {% endfor %}</br></br>
     {% endfor %}
     <a href="{% url 'photo:galleries' %}">
-        <div style="font-size: 20px; padding: 8px 0px 0px 0px;">相册</div>
+        <div>相册</div>
     </a>
     {% for gallery in galleries %}
         <a href="{% url 'photo:gallery' gallery.title %}">
-            <li style="padding: 8px 0px 0px 0px;">{{gallery.title}}</li>
+            <li>{{gallery.title}}</li>
         </a>
     {% endfor %}</br>
 {% endblock %}
