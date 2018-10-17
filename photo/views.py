@@ -76,7 +76,7 @@ class GalleryView(ListView):
         return redirect('photo:gallery', title = gallery_title)
 
 
-class UserGalleryView(ListView):
+class PhotoListView(ListView):
     template_name = 'user_gallery.html'
     
     def get_queryset(self):
@@ -96,7 +96,7 @@ class UserGalleryView(ListView):
         return context
 
 
-class GalleryYearArchiveView(YearArchiveView):
+class PhotoYearArchiveView(YearArchiveView):
     model = Photo
     template_name = 'date_archive_gallery.html'
     date_field = 'exif_datetime_original'
@@ -111,7 +111,7 @@ class GalleryYearArchiveView(YearArchiveView):
         return context
 
 
-class GalleryMonthArchiveView(MonthArchiveView):
+class PhotoMonthArchiveView(MonthArchiveView):
     model = Photo
     template_name = 'date_archive_gallery.html'
     date_field = 'exif_datetime_original'
