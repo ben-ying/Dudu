@@ -1,13 +1,15 @@
 from django.contrib import admin
 
-from .models import User, RedEnvelope, Iaer
+from .models import User
+from .models import RedEnvelope
+from .models import Iaer
+from .models import Fund
+from .models import Category
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('auth_user', 'phone', 'get_username', 'zone', 'locale', 'profile', 'created', 'modified')
+    list_display = ('id', 'auth_user', 'phone', 'get_username', 'zone', 'locale', 'profile', 'created', 'modified')
     search_fields = ('auth_user', 'phone', 'get_username')
-    #fields = ('email', 'get_username')
-
 admin.site.register(User, UserAdmin)
 
 
@@ -22,3 +24,15 @@ class IaerAdmin(admin.ModelAdmin):
     search_fields = ('user', 'money', 'category', 'datetime', 'remark', 'created')
     fields = ('user', 'money', 'category', 'remark')
 admin.site.register(Iaer, IaerAdmin)
+
+
+class FundAdmin(admin.ModelAdmin):
+    list_display = ('name', 'monthly_money', 'yearly_money', 'alternate_money', 'created', 'modified')
+    search_fields = ('name',)
+admin.site.register(Fund, FundAdmin)
+
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'sequence', 'created', 'modified')
+    search_fields = ('name',)
+admin.site.register(Category, CategoryAdmin)

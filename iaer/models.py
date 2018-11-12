@@ -8,6 +8,7 @@ import os
 from django.db import models
 from django.db.models import TextField
 from django.forms import IntegerField
+from django.utils.functional import lazy
 
 #from iaer.utils import upload_file
 
@@ -31,8 +32,35 @@ class UserManager(models.Manager):
         return self.get_queryset().girls()
 
 
+class CategoryManager(models.Manager):
+    def category_choices(self):
+        from django.db import connection
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT c.name, c.name
+            FROM iaer_category c
+            ORDER BY c.sequence ASC""")
+        choice_list = cursor.fetchall()
+        return choice_list
+
+
+class Fund(models.Model):
+    name = models.CharField(max_length=200)
+    monthly_money = models.PositiveSmallIntegerField(default=0)
+    yearly_money = models.PositiveIntegerField(default=0)
+    alternate_money = models.PositiveIntegerField(default=0)
+    created = models.DateField(editable=False, blank=True, null=True)
+    modified = models.DateField(auto_now=True, blank=True, null=True)
+    
+    def __str__(self):
+        return self.name
+
+
 class User(models.Model):
     auth_user = models.OneToOneField('auth.User', related_name='uss', on_delete=models.CASCADE)
+    is_master_user = models.BooleanField(default=False)
+    slave_user = models.ManyToManyField('self', blank=True)
+    fund = models.ForeignKey(Fund, on_delete=models.CASCADE)
     phone = models.CharField(max_length=30, blank=True, null=True)
     gender = models.PositiveSmallIntegerField(default=2) #0 for boy, 1 for girl, 2 for others
     profile = models.CharField(max_length=200, blank=True, null=True)
@@ -62,6 +90,15 @@ class User(models.Model):
         return self.auth_user.username
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=30)
+    sequence = models.PositiveSmallIntegerField(default=0)
+    created = models.DateField(editable=False, blank=True, null=True)
+    modified = models.DateField(auto_now=True, blank=True, null=True)
+
+    objects = CategoryManager()
+
+
 class RedEnvelope(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     money = models.CharField(max_length=10, blank=True, null=True)
@@ -72,19 +109,9 @@ class RedEnvelope(models.Model):
 
 
 class Iaer(models.Model):
-    CATEGORY_CHOICES = (
-        (u'生活用品', u'生活用品'),
-        (u'服饰', u'服饰'),
-        (u'餐饮', u'餐饮'),
-        (u'孩子', u'孩子'),
-        (u'装修', u'装修'),
-        (u'其他', u'其他'),
-        (u'收入', u'收入'),
-    )
-
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     money = models.IntegerField()
-    category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
+    category = models.CharField(max_length=30, choices = Category.objects.category_choices(), default=0)
     money_type = models.IntegerField(default=0)  # 0 for rmb, 1 for dollar
     remark = models.CharField(max_length=100)
     created = models.DateTimeField(editable=False, blank=True, null=True)
@@ -97,7 +124,7 @@ class Iaer(models.Model):
 
     class Meta:
         ordering = ['-id',]
-    
+
 
 class Verify(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
