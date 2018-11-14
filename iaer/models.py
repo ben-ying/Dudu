@@ -60,7 +60,7 @@ class User(models.Model):
     auth_user = models.OneToOneField('auth.User', related_name='uss', on_delete=models.CASCADE)
     is_master_user = models.BooleanField(default=False)
     slave_user = models.ManyToManyField('self', blank=True)
-    fund = models.ForeignKey(Fund, on_delete=models.CASCADE)
+    fund = models.ForeignKey(Fund, blank=True, null=True, on_delete=models.CASCADE)
     phone = models.CharField(max_length=30, blank=True, null=True)
     gender = models.PositiveSmallIntegerField(default=2) #0 for boy, 1 for girl, 2 for others
     profile = models.CharField(max_length=200, blank=True, null=True)

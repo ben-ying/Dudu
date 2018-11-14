@@ -1,5 +1,5 @@
 # common
-Django==2.0.5
+Django==2.0.2
 Pillow
 psycopg2 # Postgres, ubuntu use pip install, mac download app(http://postgresapp.com), Raspbian: https://github.com/neilcollins/piconga/wiki/Server-Install:-Raspberry-Pi(version: 9.6)
 
