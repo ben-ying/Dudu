@@ -28,7 +28,7 @@ class UserListView(ListView):
         i = 0
         for iaer in Iaer.objects.all().order_by('id'):
             i+=1
-            Iaer.objects.filter(id=iaer.id).update(id=i)
+            Iaer.objects.filter(id = iaer.id).update(id = i)
             if iaer.category == '生活用品':
                 iaer.category = '生活日用'
             elif iaer.category == '服饰':
@@ -41,11 +41,14 @@ class UserListView(ListView):
                 iaer.category = '其他消费'
             elif iaer.category == '其它':
                 iaer.category = '其他消费'
+            iaer.save()
+        """
         """
         i = 0
         for rer in RedEnvelope.objects.all().order_by('id'):
             i+=1
-            RedEnvelope.objects.filter(id=rer.id).update(id=i)
+            RedEnvelope.objects.filter(id = rer.id).update(id = i)
+        """
         context = super().get_context_data(**kwargs)
 
         return context
