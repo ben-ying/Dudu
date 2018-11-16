@@ -24,6 +24,28 @@ class UserListView(ListView):
     template_name = 'iaer_users.html'
 
     def get_context_data(self, **kwargs):
+        """
+        i = 0
+        for iaer in Iaer.objects.all().order_by('id'):
+            i+=1
+            Iaer.objects.filter(id=iaer.id).update(id=i)
+            if iaer.category == '生活用品':
+                iaer.category = '生活日用'
+            elif iaer.category == '服饰':
+                iaer.category = '服饰美容'
+            elif iaer.category == '餐饮':
+                iaer.category = '饮食'
+            elif iaer.category == '孩子':
+                iaer.category = '小孩其他'
+            elif iaer.category == '其他':
+                iaer.category = '其他消费'
+            elif iaer.category == '其它':
+                iaer.category = '其他消费'
+        """
+        i = 0
+        for rer in RedEnvelope.objects.all().order_by('id'):
+            i+=1
+            RedEnvelope.objects.filter(id=rer.id).update(id=i)
         context = super().get_context_data(**kwargs)
 
         return context

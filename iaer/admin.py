@@ -14,7 +14,7 @@ admin.site.register(User, UserAdmin)
 
 
 class RedEnvelopeAdmin(admin.ModelAdmin):
-    list_display = ('user', 'money', 'money_type', 'money_from', 'remark', 'created')
+    list_display = ('id', 'user', 'money', 'money_type', 'money_from', 'remark', 'created')
     search_fields = ('user', 'money', 'money_type', 'money_from', 'remark', 'created')
 admin.site.register(RedEnvelope, RedEnvelopeAdmin)
 

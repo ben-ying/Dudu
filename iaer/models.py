@@ -110,6 +110,9 @@ class RedEnvelope(models.Model):
     remark = models.CharField(max_length=100)
     created = models.DateTimeField(editable=False, blank=True, null=True)
 
+    class Meta:
+        ordering = ['-created',]
+
 
 class Iaer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
