@@ -114,7 +114,7 @@ class Iaer(models.Model):
     category = models.CharField(max_length=30, choices = Category.objects.category_choices(), default=0)
     money_type = models.IntegerField(default=0)  # 0 for rmb, 1 for dollar
     remark = models.CharField(max_length=100)
-    created = models.DateTimeField(editable=False, blank=True, null=True)
+    created = models.DateTimeField(blank=True, null=True)
     type = models.IntegerField(default=0)
     chart_type = models.IntegerField(default=0)
     format = models.CharField(max_length=50, blank=True, null=True)
@@ -123,7 +123,7 @@ class Iaer(models.Model):
     timing = models.CharField(max_length=100, blank=True, null=True) # for every week or every month input or consumption
 
     class Meta:
-        ordering = ['-id',]
+        ordering = ['-created',]
 
 
 class Verify(models.Model):
