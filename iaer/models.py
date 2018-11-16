@@ -98,6 +98,9 @@ class Category(models.Model):
 
     objects = CategoryManager()
 
+    class Meta:
+        ordering = ['sequence',]
+
 
 class RedEnvelope(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

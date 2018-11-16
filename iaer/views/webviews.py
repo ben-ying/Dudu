@@ -23,6 +23,12 @@ class UserListView(ListView):
     model = User
     template_name = 'iaer_users.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        return context
+
+
 class IaerListView(ListView):
     model = Iaer
     template_name = 'iaers.html'

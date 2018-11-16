@@ -20,7 +20,7 @@ admin.site.register(RedEnvelope, RedEnvelopeAdmin)
 
 
 class IaerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'money', 'category', 'datetime', 'remark', 'created')
+    list_display = ('id', 'user', 'money', 'category', 'datetime', 'remark', 'created')
     search_fields = ('user', 'money', 'category', 'datetime', 'remark', 'created')
     fields = ('user', 'money', 'category', 'created', 'remark')
 admin.site.register(Iaer, IaerAdmin)
