@@ -2,7 +2,7 @@
 {% block head %}
 {% endblock %}
 {% block body %}
-<form method="post">{% csrf_token %}
+<form method="post" data-ajax="false">{% csrf_token %}
     <div style="padding: 24px;">
         {{ form.as_p }}
         <input type="submit" id="submit" value="保存" />

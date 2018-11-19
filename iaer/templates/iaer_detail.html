@@ -2,7 +2,7 @@
 {% block head %}
 {% endblock %}
 {% block body %}
-<form action="{% url 'iaer:iaer-delete' object.id %}" method="post">{% csrf_token %}
+<form action="{% url 'iaer:iaer-delete' object.id %}" method="post" data-ajax="false">{% csrf_token %}
     <center style="padding: 24px;">
         <p>类别: {{object.category}}</p>
         <p>金额: {{object.money}}</p>
