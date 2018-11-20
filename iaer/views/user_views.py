@@ -55,7 +55,7 @@ from iaer.utils import simple_json_response
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
-        'users': reverse('iaer:user-list'),
+        'users': reverse('iaer:api-user-list'),
     })
 
     # permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
