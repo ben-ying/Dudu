@@ -165,11 +165,12 @@ class IaerViewSet(CustomModelViewSet):
                 if iaer:
                     try:
                         response = super(IaerViewSet, self).destroy(request, *args, **kwargs)
+                        print("168: " + str(response.status_code))
                         if response.status_code != status.HTTP_204_NO_CONTENT:
                             iaer.id = -1
                     except Exception as e:
-                       iaer.id = -1
-                       save_error_log(request, e)
+                        iaer.id = -1
+                        save_error_log(request, e)
                     event_json = IaerSerializer(iaer).data
                     return json_response(event_json, CODE_SUCCESS, MSG_DELETE_IAER_SUCCESS)
                 else:
@@ -177,5 +178,6 @@ class IaerViewSet(CustomModelViewSet):
             else:
                 return invalid_token_response()
         except Exception as e:
+            raise Exception(e)
             return save_error_log(request, e)
 
