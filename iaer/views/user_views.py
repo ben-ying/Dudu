@@ -71,6 +71,7 @@ class UserViewSet(CustomModelViewSet):
             serializer.is_valid()
             token = request.data.get('token')
             user = get_user_by_token(token)
+            pdb.set_trace()
 
             if user:
                 return json_response(super(UserViewSet, self).list(request, *args, **kwargs).data,

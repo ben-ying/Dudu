@@ -39,8 +39,6 @@ class RedEnvelopeViewSet(CustomModelViewSet):
 
     def list(self, request, *args, **kwargs):
         try:
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid()
             token = request.query_params.get('token')
             user = get_user_by_token(token)
             if user:
@@ -56,10 +54,10 @@ class RedEnvelopeViewSet(CustomModelViewSet):
         user = get_user_by_token(token)
         user_id = self.request.query_params.get('user_id', -1)
         if int(user_id) < 0:
-            return super(RedEnvelopeViewSet, self).get_queryset().order_by("-id")
+            return super(RedEnvelopeViewSet, self).get_queryset()
         else:
-            user_id = User.objects.get(user=user).id
-            return super(RedEnvelopeViewSet, self).get_queryset().filter(user_id=user_id).order_by("-id")
+            user_id = User.objects.get(auth_user=user).id
+            return super(RedEnvelopeViewSet, self).get_queryset().filter(user_id=user_id)
 
     def create(self, request, *args, **kwargs):
         try:
@@ -115,8 +113,6 @@ class IaerViewSet(CustomModelViewSet):
 
     def list(self, request, *args, **kwargs):
         try:
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid()
             token = request.query_params.get('token')
             user = get_user_by_token(token)
             if user:
@@ -132,10 +128,10 @@ class IaerViewSet(CustomModelViewSet):
         user = get_user_by_token(token)
         user_id = self.request.query_params.get('user_id', -1)
         if int(user_id) < 0:
-            return super(IaerViewSet, self).get_queryset().order_by("-id")
+            return super(IaerViewSet, self).get_queryset()
         else:
-            user_id = User.objects.get(user=user).id
-            return super(IaerViewSet, self).get_queryset().filter(user_id=user_id).order_by("-id")
+            user_id = User.objects.get(auth_user=user).id
+            return super(IaerViewSet, self).get_queryset().filter(user_id=user_id)
 
     def create(self, request, *args, **kwargs):
         try:
