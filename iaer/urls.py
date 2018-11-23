@@ -5,7 +5,7 @@ from rest_framework import renderers
 from rest_framework.urlpatterns import format_suffix_patterns
 
 # api
-from iaer.views.views import about_us_view, RedEnvelopeViewSet, IaerViewSet
+from iaer.views.views import about_us_view, RedEnvelopeViewSet, IaerViewSet, CategoryViewSet, FundViewSet
 from iaer.views.user_views import UserViewSet, login_view, send_verify_code_view, reset_password_with_verify_code_view
 from iaer.views.user_views import api_root
 
@@ -50,6 +50,14 @@ api_iaer_detail = IaerViewSet.as_view({
     'delete': 'destroy'
 })
 
+api_category_list = CategoryViewSet.as_view({
+    'get': 'list',
+})
+
+api_fund_list = FundViewSet.as_view({
+    'get': 'list',
+})
+
 # user_login = LoginViewSet.as_view({
 #     'post': 'retrieve',
 # })
@@ -72,6 +80,8 @@ api_urlpatterns = [
     path('envelopes/<int:pk>/', api_red_envelope_detail, name='api-red-envelope-detail'),
     path('iaers/', api_iaer_list, name='api-iaer-list'),
     path('iaers/<int:pk>/', api_iaer_detail, name='api-iaer-detail'),
+    path('categories/', api_category_list, name='api-category-list'),
+    path('funds/', api_fund_list, name='api-fund-list'),
 ]
 
 urlpatterns = [

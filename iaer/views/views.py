@@ -18,10 +18,12 @@ from rest_framework.authtoken.models import Token
 
 from iaer.constants import CODE_SUCCESS, FEEDBACK_FOOTER_IMAGE, DIR_FEEDBACK, MSG_NO_CONTENT, \
     MSG_GET_RED_ENVELOPES_SUCCESS, MSG_DELETE_RED_ENVELOPE_SUCCESS, CODE_NO_CONTENT, \
-    MSG_204, MSG_ADD_RED_ENVELOPE_SUCCESS, MSG_ADD_IAER_SUCCESS, MSG_DELETE_IAER_SUCCESS, MSG_GET_IAERS_SUCCESS
+    MSG_204, MSG_ADD_RED_ENVELOPE_SUCCESS, MSG_ADD_IAER_SUCCESS, MSG_DELETE_IAER_SUCCESS, MSG_GET_IAERS_SUCCESS, MSG_GET_CATEGORIES_SUCCESS, MSG_GET_FUND_SUCCESS
 from iaer.constants import MSG_SEND_FEEDBACK_SUCCESS
-from iaer.models import User, RedEnvelope, Iaer
+from iaer.models import User, RedEnvelope, Iaer, Category, Fund
+from iaer.serializers.user import FundSerializer
 from iaer.serializers.iaer import IaerSerializer
+from iaer.serializers.category import CategorySerializer
 from iaer.serializers.red_envelope import RedEnvelopeSerializer
 from iaer.utils import invalid_token_response, get_user_by_token, save_error_log, \
         CustomModelViewSet, json_response, LargeResultsSetPagination
@@ -180,4 +182,25 @@ class IaerViewSet(CustomModelViewSet):
         except Exception as e:
             raise Exception(e)
             return save_error_log(request, e)
+
+
+
+class CategoryViewSet(CustomModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    pagination_class = LargeResultsSetPagination
+
+    def list(self, request, *args, **kwargs):
+        return json_response(super(CategoryViewSet, self).list(request, *args, **kwargs).data,
+                         CODE_SUCCESS, MSG_GET_CATEGORIES_SUCCESS)
+
+
+class FundViewSet(CustomModelViewSet):
+    queryset = Fund.objects.all()
+    serializer_class = FundSerializer
+    pagination_class = LargeResultsSetPagination
+
+    def list(self, request, *args, **kwargs):
+        return json_response(super(FundViewSet, self).list(request, *args, **kwargs).data,
+                         CODE_SUCCESS, MSG_GET_FUND_SUCCESS)
 

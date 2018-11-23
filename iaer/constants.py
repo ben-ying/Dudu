@@ -85,6 +85,8 @@ MSG_GET_COMMENTS_SUCCESS = _(u'获取评论成功')
 MSG_SEND_FEEDBACK_SUCCESS = _(u'反馈消息发送成功')
 MSG_GET_USER_DETAIL_SUCCESS = _(u'获取用户信息成功')
 MSG_ADD_LIKE_SUCCESS = _(u'点赞成功')
+MSG_GET_CATEGORIES_SUCCESS = _(u'获取类别成功')
+MSG_GET_FUND_SUCCESS = _(u'获取Fund成功')
 
 PASSWORD_VERIFY_CODE_EMAIL_SUBJECT = _(u'忘记密码验证码－嘟嘟手记')
 PASSWORD_VERIFY_CODE_EMAIL_CONTENT = _(u'您的验证码：%s。\n本邮件是系统自动发送的，请勿直接回复！感谢您的访问，祝您使用愉快！')

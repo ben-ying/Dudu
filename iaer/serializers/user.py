@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from iaer.models import User
+from iaer.models import User, Fund
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -11,3 +11,12 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['user_id', 'username', 'profile', 'email', 'phone', 'gender', 'user_type', 'region', 'zone', 'locale', 'whats_up', 'birthday', 'hobbies', 'highlighted', 'is_email_activate', 'is_phone_activate', 'modified', 'created']
+
+
+class FundSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Fund
+        fields = ['name', 'monthly_money', 'yearly_money', 'alternate_money', 'created', 'modified']
+
+
