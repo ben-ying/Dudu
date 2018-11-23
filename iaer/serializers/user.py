@@ -14,9 +14,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class FundSerializer(serializers.ModelSerializer):
+    fund_id = serializers.IntegerField(read_only=True, source="id")
     
     class Meta:
         model = Fund
-        fields = ['name', 'monthly_money', 'yearly_money', 'alternate_money', 'created', 'modified']
+        fields = ['fund_id', 'name', 'monthly_money', 'yearly_money', 'alternate_money', 'created', 'modified']
 
 
