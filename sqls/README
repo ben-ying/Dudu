@@ -1,2 +1,2 @@
-0 22 * * * pg_dump myproject  > ~/app/DjangoApps/sqls/dump`date + _\%Y-\%m-\%d`..
-sql
+0 22 * * * /bin/sh ~/app/DjangoApps/sqls/dump.sh
+

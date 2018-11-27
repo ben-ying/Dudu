@@ -9,19 +9,19 @@ from .models import Category
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'auth_user', 'phone', 'get_username', 'zone', 'locale', 'profile', 'created', 'modified')
-    search_fields = ('auth_user', 'phone', 'get_username')
+    search_fields = ('auth_user__username', 'phone')
 admin.site.register(User, UserAdmin)
 
 
 class RedEnvelopeAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'money', 'money_type', 'money_from', 'remark', 'created')
-    search_fields = ('user', 'money', 'money_type', 'money_from', 'remark', 'created')
+    search_fields = ('user__auth_user__username', 'money', 'money_type', 'money_from', 'remark', 'created')
 admin.site.register(RedEnvelope, RedEnvelopeAdmin)
 
 
 class IaerAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'money', 'category', 'datetime', 'remark', 'created')
-    search_fields = ('user', 'money', 'category', 'datetime', 'remark', 'created')
+    search_fields = ('user__auth_user__username', 'money', 'category', 'datetime', 'remark', 'created')
     fields = ('user', 'money', 'category', 'created', 'remark')
 admin.site.register(Iaer, IaerAdmin)
 
