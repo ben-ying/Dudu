@@ -26,7 +26,7 @@ from iaer.serializers.iaer import IaerSerializer
 from iaer.serializers.category import CategorySerializer
 from iaer.serializers.red_envelope import RedEnvelopeSerializer
 from iaer.utils import invalid_token_response, get_user_by_token, save_error_log, \
-        CustomModelViewSet, json_response, LargeResultsSetPagination
+        CustomModelViewSet, json_response, StandardResultsSetPagination, LargeResultsSetPagination
 from iaer.utils import simple_json_response
 
 
@@ -37,7 +37,7 @@ def about_us_view(request):
 class RedEnvelopeViewSet(CustomModelViewSet):
     queryset = RedEnvelope.objects.all()
     serializer_class = RedEnvelopeSerializer
-    pagination_class = LargeResultsSetPagination
+    pagination_class = StandardResultsSetPagination
 
     def list(self, request, *args, **kwargs):
         try:
@@ -111,7 +111,7 @@ class RedEnvelopeViewSet(CustomModelViewSet):
 class IaerViewSet(CustomModelViewSet):
     queryset = Iaer.objects.all()
     serializer_class = IaerSerializer
-    pagination_class = LargeResultsSetPagination
+    pagination_class = StandardResultsSetPagination
 
     def list(self, request, *args, **kwargs):
         try:
