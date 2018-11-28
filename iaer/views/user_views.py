@@ -5,7 +5,7 @@ import time
 import pdb
 
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User as AuthUser
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -71,7 +71,6 @@ class UserViewSet(CustomModelViewSet):
             serializer.is_valid()
             token = request.data.get('token')
             user = get_user_by_token(token)
-            pdb.set_trace()
 
             if user:
                 return json_response(super(UserViewSet, self).list(request, *args, **kwargs).data,
@@ -104,12 +103,12 @@ class UserViewSet(CustomModelViewSet):
                 return simple_json_response(CODE_INVALID_EMAIL, MSG_INVALID_EMAIL)
             elif len(password) < MIN_PASSWORD_LEN:
                 return simple_json_response(CODE_INVALID_PASSWORD, MSG_INVALID_PASSWORD)
-            elif User.objects.filter(username__iexact=username) or User.objects.filter(username__iexact=email):
+            elif AuthUser.objects.filter(username__iexact=username) or AuthUser.objects.filter(username__iexact=email):
                 return simple_json_response(CODE_DUPLICATE_USER, MSG_DUPLICATE_USER)
-            elif User.objects.filter(email__iexact=email) or User.objects.filter(email__iexact=username):
+            elif AuthUser.objects.filter(email__iexact=email) or AuthUser.objects.filter(email__iexact=username):
                 return simple_json_response(CODE_DUPLICATE_EMAIL, MSG_DUPLICATE_EMAIL)
             elif serializer.is_valid():
-                user = User()
+                user = AuthUser()
                 user.email = email.lower()
                 user.is_active = True
                 user.is_staff = True
@@ -121,7 +120,7 @@ class UserViewSet(CustomModelViewSet):
                 self.perform_create(serializer)
                 response_data = serializer.data
                 response_data['token'] = Token.objects.create(user=user).key
-                user_user = User.objects.get(user=user)
+                user_user = AuthUser.objects.get(user=user)
                 user_user.locale = response_data['locale']
                 user_user.created = timezone.now()
                 if base64:
@@ -162,11 +161,11 @@ class UserViewSet(CustomModelViewSet):
         try:
             user = get_user_by_token(token)
             if user:
-                if User.objects.filter(user=user):
-                    user = User.objects.get(user=user)
+                if AuthUser.objects.filter(user=user):
+                    user = AuthUser.objects.get(user=user)
 
                     if email:
-                        if User.objects.filter(username__iexact=email) or User.objects.filter(email__iexact=email):
+                        if AuthUser.objects.filter(username__iexact=email) or AuthUser.objects.filter(email__iexact=email):
                             return simple_json_response(CODE_DUPLICATE_USER, MSG_DUPLICATE_EMAIL)
                         else:
                             user.email = email
@@ -174,7 +173,7 @@ class UserViewSet(CustomModelViewSet):
                     if user_name:
                         user.user_name = user_name
                     if phone:
-                        if User.objects.filter(phone=phone):
+                        if AuthUser.objects.filter(phone=phone):
                             return simple_json_response(CODE_DUPLICATE_PHONE, MSG_DUPLICATE_PHONE)
                         else:
                             user.phone = phone
