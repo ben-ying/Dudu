@@ -18,16 +18,22 @@ class StaticsticsCategoryViewSet(CustomModelViewSet):
 
     def list(self, request, *args, **kwargs):
         response_data = super(StaticsticsCategoryViewSet, self).list(request, *args, **kwargs).data
-        response_data['year'] = request.GET.get('year', 2018) 
-        response_data['month'] = request.GET.get('month', 0) # if type = 2, month = 0
+        user_id = request.GET.get('user_id', 0)
+        response_data['year'] = request.GET.get('year', 0) # if year = 0, get all category
+        response_data['month'] = request.GET.get('month', 0) # if month = 0, get current year else get current month
 
         for result in response_data['results']:
             money = 0
-            if response_data['month'] == 0:
+            if response_data['year'] == 0:
                 iaers = Iaer.objects.filter(Q(category = result['name']) & \
+                        Q(user__id = user__id))
+            elif response_data['month'] == 0:
+                iaers = Iaer.objects.filter(Q(category = result['name']) & \
+                        Q(user__id = user__id) & \
                         Q(created__year = response_data['year']))
             else:
                 iaers = Iaer.objects.filter(Q(category = result['name']) & \
+                        Q(user__id = user__id) & \
                         Q(created__year = response_data['year']) & \
                         Q(created__month = response_data['month']))
 
