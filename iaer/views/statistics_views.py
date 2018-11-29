@@ -18,22 +18,23 @@ class StatisticsCategoryViewSet(CustomModelViewSet):
 
     def list(self, request, *args, **kwargs):
         response_data = super(StatisticsCategoryViewSet, self).list(request, *args, **kwargs).data
-        user_id = request.GET.get('user_id', 0)
-        response_data['year'] = request.GET.get('year', 0) # if year = 0, get all category
-        response_data['month'] = request.GET.get('month', 0) # if month = 0, get current year else get current month
+        token = request.GET.get('token', '')
+        user = get_user_by_token(token)
+        response_data['year'] = int(request.GET.get('year', 0)) # if year = 0, get all category
+        response_data['month'] = int(request.GET.get('month', 0)) # if month = 0, get current year else get current month
 
         for result in response_data['results']:
             money = 0
             if response_data['year'] == 0:
                 iaers = Iaer.objects.filter(Q(category = result['name']) & \
-                        Q(user__id = user_id))
+                        Q(user__id = user.id))
             elif response_data['month'] == 0:
                 iaers = Iaer.objects.filter(Q(category = result['name']) & \
-                        Q(user__id = user_id) & \
+                        Q(user__id = user.id) & \
                         Q(created__year = response_data['year']))
             else:
                 iaers = Iaer.objects.filter(Q(category = result['name']) & \
-                        Q(user__id = user_id) & \
+                        Q(user__id = user.id) & \
                         Q(created__year = response_data['year']) & \
                         Q(created__month = response_data['month']))
 
