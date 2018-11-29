@@ -11,13 +11,13 @@ from iaer.constants import CODE_SUCCESS, MSG_GET_CATEGORIES_SUCCESS
 from iaer.serializers.category import CategorySerializer
 
 
-class StaticsticsCategoryViewSet(CustomModelViewSet):
+class StatisticsCategoryViewSet(CustomModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = LargeResultsSetPagination
 
     def list(self, request, *args, **kwargs):
-        response_data = super(StaticsticsCategoryViewSet, self).list(request, *args, **kwargs).data
+        response_data = super(StatisticsCategoryViewSet, self).list(request, *args, **kwargs).data
         user_id = request.GET.get('user_id', 0)
         response_data['year'] = request.GET.get('year', 0) # if year = 0, get all category
         response_data['month'] = request.GET.get('month', 0) # if month = 0, get current year else get current month

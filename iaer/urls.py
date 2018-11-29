@@ -8,7 +8,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from iaer.views.views import about_us_view, RedEnvelopeViewSet, IaerViewSet, CategoryViewSet, FundViewSet
 from iaer.views.user_views import UserViewSet, login_view, send_verify_code_view, reset_password_with_verify_code_view
 from iaer.views.user_views import api_root
-from iaer.views.statistics_views import StaticsticsCategoryViewSet
+from iaer.views.statistics_views import StatisticsCategoryViewSet
 
 # website
 from iaer.views.webviews import index
@@ -55,7 +55,7 @@ api_category_list = CategoryViewSet.as_view({
     'get': 'list',
 })
 
-api_staticstics_category = StaticsticsCategoryViewSet.as_view({
+api_statistics_category = StatisticsCategoryViewSet.as_view({
     'get': 'list',
 })
 
@@ -86,7 +86,7 @@ api_urlpatterns = [
     path('iaers/', api_iaer_list, name='api-iaer-list'),
     path('iaers/<int:pk>/', api_iaer_detail, name='api-iaer-detail'),
     path('categories/', api_category_list, name='api-category-list'),
-    path('staticstics/category/', api_staticstics_category, name='api-staticstics-category'),
+    path('statistics/category/', api_statistics_category, name='api-statistics-category'),
     path('funds/', api_fund_list, name='api-fund-list'),
 ]
 
