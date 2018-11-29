@@ -25,9 +25,8 @@ from iaer.serializers.user import FundSerializer
 from iaer.serializers.iaer import IaerSerializer
 from iaer.serializers.category import CategorySerializer
 from iaer.serializers.red_envelope import RedEnvelopeSerializer
-from iaer.utils import invalid_token_response, get_user_by_token, save_error_log, \
-        CustomModelViewSet, json_response, StandardResultsSetPagination, LargeResultsSetPagination
-from iaer.utils import simple_json_response
+from iaer.utils import json_response, simple_json_response, invalid_token_response, get_user_by_token, save_error_log, \
+        CustomModelViewSet, StandardResultsSetPagination, LargeResultsSetPagination
 
 
 def about_us_view(request):
