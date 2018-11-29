@@ -26,14 +26,14 @@ class StatisticsCategoryViewSet(CustomModelViewSet):
             money = 0
             if response_data['year'] == 0:
                 iaers = Iaer.objects.filter(Q(category = result['name']) & \
-                        Q(user__id = user__id))
+                        Q(user__id = user_id))
             elif response_data['month'] == 0:
                 iaers = Iaer.objects.filter(Q(category = result['name']) & \
-                        Q(user__id = user__id) & \
+                        Q(user__id = user_id) & \
                         Q(created__year = response_data['year']))
             else:
                 iaers = Iaer.objects.filter(Q(category = result['name']) & \
-                        Q(user__id = user__id) & \
+                        Q(user__id = user_id) & \
                         Q(created__year = response_data['year']) & \
                         Q(created__month = response_data['month']))
 
