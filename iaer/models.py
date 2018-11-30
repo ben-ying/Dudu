@@ -140,3 +140,4 @@ class Verify(models.Model):
 
     def __str__(self):
         return self.user.get_username()
+

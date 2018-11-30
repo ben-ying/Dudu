@@ -3,12 +3,16 @@
 import pdb
 
 from django.db.models import Q
+from datetime import datetime
+from django.http import HttpResponse
+from collections import OrderedDict
 
 from iaer.utils import CustomModelViewSet, StandardResultsSetPagination, LargeResultsSetPagination, \
         json_response, get_user_by_token, save_error_log, invalid_token_response, simple_json_response
 from iaer.models import Category, User, Iaer
 from iaer.constants import CODE_SUCCESS, MSG_GET_CATEGORIES_SUCCESS
 from iaer.serializers.category import CategorySerializer
+from iaer.serializers.iaer import IaerSerializer
 
 
 class StatisticsCategoryViewSet(CustomModelViewSet):
@@ -46,3 +50,40 @@ class StatisticsCategoryViewSet(CustomModelViewSet):
                          CODE_SUCCESS, MSG_GET_CATEGORIES_SUCCESS)
 
 
+class StatisticsDateViewSet(CustomModelViewSet):
+    queryset = Iaer.objects.all()
+    serializer_class = IaerSerializer
+    pagination_class = LargeResultsSetPagination
+
+    def list(self, request, *args, **kwargs):
+        response_data = super(StatisticsDateViewSet, self).list(request, *args, **kwargs).data
+        token = request.GET.get('token', '')
+        user = get_user_by_token(token)
+        request_type = int(self.request.GET.get('type', 1)) # 1 for monthly, 2 for yearly
+        data_list = []
+        year = datetime.now().year
+        month = datetime.now().month
+
+        if user:
+            iaers = Iaer.objects.filter(user__id = user.id).order_by('created')
+        else:
+            iaers = Iaer.objects.filter(user__id = -1)
+
+
+        for y in range(2017, year + 1): # get data from year 2017
+            for m in range(1, 12 + 1):
+                if request_type == 1:
+                    iaer_list = iaers.filter(Q(created__year = y) & Q(created__month = m))
+                else:
+                    iaer_list = iaers.filter(created__year = y)
+                if len(iaer_list) > 0:
+                    money = 0
+                    for iaer in iaer_list:
+                        money += iaer.money
+                    data = OrderedDict([('year', y), ('month', m), ('money', money)])
+                    data_list.append(data)
+
+        response_data['results'] = data_list
+        response_data['count'] = len(data_list)
+
+        return json_response(response_data, CODE_SUCCESS, MSG_GET_CATEGORIES_SUCCESS)
