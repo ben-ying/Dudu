@@ -51,7 +51,7 @@ class StatisticsCategoryViewSet(CustomModelViewSet):
 
 
 class StatisticsDateViewSet(CustomModelViewSet):
-    queryset = Iaer.objects.all()
+    queryset = Iaer.objects.filter(user__id = -1)
     serializer_class = IaerSerializer
     pagination_class = LargeResultsSetPagination
 
