@@ -83,10 +83,10 @@ class StatisticsDateViewSet(CustomModelViewSet):
                             else:
                                 out_money += iaer.money
                         if in_money != 0:
-                            data = OrderedDict([('year', y), ('month', 0), ('money', in_money)])
+                            data = OrderedDict([('year', y), ('month', m), ('money', in_money)])
                             data_list.append(data)
                         if out_money != 0:
-                            data = OrderedDict([('year', y), ('month', 0), ('money', out_money)])
+                            data = OrderedDict([('year', y), ('month', m), ('money', out_money)])
                             data_list.append(data)
         else: 
             for y in range(2017, year + 1): # get data from year 2017
