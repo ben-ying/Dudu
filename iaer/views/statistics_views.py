@@ -75,11 +75,19 @@ class StatisticsDateViewSet(CustomModelViewSet):
                 for m in range(1, 12 + 1):
                     iaer_list = iaers.filter(Q(created__year = y) & Q(created__month = m))
                     if len(iaer_list) > 0:
-                        money = 0
+                        in_money = 0
+                        out_money = 0
                         for iaer in iaer_list:
-                            money += iaer.money
-                        data = OrderedDict([('year', y), ('month', m), ('money', money)])
-                        data_list.append(data)
+                            if iaer.money > 0:
+                                in_money += iaer.money
+                            else:
+                                out_money += iaer.money
+                        if in_money != 0:
+                            data = OrderedDict([('year', y), ('month', 0), ('money', in_money)])
+                            data_list.append(data)
+                        if out_money != 0:
+                            data = OrderedDict([('year', y), ('month', 0), ('money', out_money)])
+                            data_list.append(data)
         else: 
             for y in range(2017, year + 1): # get data from year 2017
                 iaer_list = iaers.filter(created__year = y)
