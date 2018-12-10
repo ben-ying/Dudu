@@ -70,18 +70,26 @@ class StatisticsDateViewSet(CustomModelViewSet):
             iaers = Iaer.objects.filter(user__id = -1)
 
 
-        for y in range(2017, year + 1): # get data from year 2017
-            for m in range(1, 12 + 1):
-                if request_type == 1:
+        if request_type == 1:
+            for y in range(2017, year + 1): # get data from year 2017
+                for m in range(1, 12 + 1):
                     iaer_list = iaers.filter(Q(created__year = y) & Q(created__month = m))
-                else:
-                    iaer_list = iaers.filter(created__year = y)
+                    if len(iaer_list) > 0:
+                        money = 0
+                        for iaer in iaer_list:
+                            money += iaer.money
+                        data = OrderedDict([('year', y), ('month', m), ('money', money)])
+                        data_list.append(data)
+        else: 
+            for y in range(2017, year + 1): # get data from year 2017
+                iaer_list = iaers.filter(created__year = y)
                 if len(iaer_list) > 0:
                     money = 0
                     for iaer in iaer_list:
                         money += iaer.money
-                    data = OrderedDict([('year', y), ('month', m), ('money', money)])
+                    data = OrderedDict([('year', y), ('month', 0), ('money', money)])
                     data_list.append(data)
+
 
         response_data['results'] = data_list
         response_data['count'] = len(data_list)
