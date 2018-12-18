@@ -141,10 +141,11 @@ class IaerViewSet(CustomModelViewSet):
         if not categories:
             flag += 4
 
+        pdb.set_trace()
         if int(user_id) < 0:
             return Iaer.objects.filter(user_id = -1)
         else:
-            if int(user_id) < 0 or not years or not months or not categories:
+            if int(user_id) < 0:
                 return Iaer.objects.filter(user_id = -1)
             else:
                 user_id = User.objects.get(auth_user = user).id
