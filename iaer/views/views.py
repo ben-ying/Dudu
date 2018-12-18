@@ -4,7 +4,9 @@ import time
 import json
 import pdb
 import traceback
+import ast
 
+from django.db.models import Q
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
@@ -108,7 +110,6 @@ class RedEnvelopeViewSet(CustomModelViewSet):
 
 
 class IaerViewSet(CustomModelViewSet):
-    queryset = Iaer.objects.all()
     serializer_class = IaerSerializer
     pagination_class = StandardResultsSetPagination
 
@@ -128,11 +129,70 @@ class IaerViewSet(CustomModelViewSet):
         token = self.request.query_params.get('token')
         user = get_user_by_token(token)
         user_id = self.request.query_params.get('user_id', -1)
+        pdb.set_trace()
+        years =  self.request.query_params.get('years', '')
+        months =  self.request.query_params.get('months', '')
+        categories =  self.request.query_params.get('categories', '')
+
+        flag = 0
+        if not years:
+            flag += 1
+        if not months:
+            flag += 2
+        if not categories:
+            flag += 4
+
         if int(user_id) < 0:
-            return super(IaerViewSet, self).get_queryset()
+            return Iaer.objects.filter(user_id = -1)
         else:
-            user_id = User.objects.get(auth_user=user).id
-            return super(IaerViewSet, self).get_queryset().filter(user_id=user_id)
+            years =  ast.literal_eval(years) # convert string list to list
+            months =  ast.literal_eval(months)
+            categories =  ast.literal_eval(categories)
+
+            if int(user_id) < 0 or not years or not months or not categories:
+                return Iaer.objects.filter(user_id = -1)
+            else:
+                user_id = User.objects.get(auth_user = user).id
+                category_names = []
+                category_list = Category.objects.filter(pk__in = categories)
+                for category in category_list:
+                    category_names.append(category.name)
+                # years not filter
+                if flag == 1:
+                    return Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__month__in = months) & \
+                                        Q(category__in = category_name))
+                # months not filter
+                elif flag == 2:
+                    return Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__year__in = years) & \
+                                        Q(category__in = category_name))
+                # years and months not filter
+                elif flag == 3:
+                    return Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(category__in = category_name))
+                # categories not filter
+                elif flag == 4:
+                    return Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__year__in = years) & \
+                                        Q(created__month__in = months))
+                # years and categories not filter
+                elif flag == 5:
+                    return Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__month__in = months))
+                # months and categories not filter
+                elif flag == 6:
+                    return Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__year__in = years))
+                # years, months and categories not filter
+                elif flag == 7:
+                    return Iaer.objects.filter(user_id = user_id)
+                # filter years, months and categories
+                else:
+                    return Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__year__in = years) & \
+                                        Q(created__month__in = months) & \
+                                        Q(category__in = category_name))
 
     def create(self, request, *args, **kwargs):
         try:
@@ -144,7 +204,7 @@ class IaerViewSet(CustomModelViewSet):
 
             if user:
                 iaer = Iaer()
-                iaer.user = User.objects.get(auth_user=user)
+                iaer.user = User.objects.get(auth_user = user)
                 iaer.money = money
                 iaer.category = category
                 iaer.remark = remark

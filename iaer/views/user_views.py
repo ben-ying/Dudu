@@ -117,6 +117,7 @@ class UserViewSet(CustomModelViewSet):
                 user.first_name = first_name
                 user.last_name = last_name
                 self.request.user = user
+                pdb.set_trace()
                 self.perform_create(serializer)
                 response_data = serializer.data
                 response_data['token'] = Token.objects.create(user=user).key
