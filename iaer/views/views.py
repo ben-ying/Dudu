@@ -129,7 +129,6 @@ class IaerViewSet(CustomModelViewSet):
         token = self.request.query_params.get('token')
         user = get_user_by_token(token)
         user_id = self.request.query_params.get('user_id', -1)
-        pdb.set_trace()
         years =  self.request.query_params.get('years', '')
         months =  self.request.query_params.get('months', '')
         categories =  self.request.query_params.get('categories', '')
@@ -161,16 +160,16 @@ class IaerViewSet(CustomModelViewSet):
                 if flag == 1:
                     return Iaer.objects.filter(Q(user_id = user_id) & \
                                         Q(created__month__in = months) & \
-                                        Q(category__in = category_name))
+                                        Q(category__in = category_names))
                 # months not filter
                 elif flag == 2:
                     return Iaer.objects.filter(Q(user_id = user_id) & \
                                         Q(created__year__in = years) & \
-                                        Q(category__in = category_name))
+                                        Q(category__in = category_names))
                 # years and months not filter
                 elif flag == 3:
                     return Iaer.objects.filter(Q(user_id = user_id) & \
-                                        Q(category__in = category_name))
+                                        Q(category__in = category_names))
                 # categories not filter
                 elif flag == 4:
                     return Iaer.objects.filter(Q(user_id = user_id) & \
@@ -192,7 +191,7 @@ class IaerViewSet(CustomModelViewSet):
                     return Iaer.objects.filter(Q(user_id = user_id) & \
                                         Q(created__year__in = years) & \
                                         Q(created__month__in = months) & \
-                                        Q(category__in = category_name))
+                                        Q(category__in = category_names))
 
     def create(self, request, *args, **kwargs):
         try:
