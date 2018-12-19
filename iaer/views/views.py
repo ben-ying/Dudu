@@ -6,6 +6,7 @@ import pdb
 import traceback
 import ast
 
+from datetime import datetime
 from django.db.models import Q
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -118,7 +119,10 @@ class IaerViewSet(CustomModelViewSet):
             token = request.query_params.get('token')
             user = get_user_by_token(token)
             if user:
+                year = datetime.now().year
+                month = datetime.now().month
                 response_data = super(IaerViewSet, self).list(request, *args, **kwargs).data
+
                 income = 0
                 expenditure = 0
                 for iaer in self.get_queryset():
@@ -126,8 +130,29 @@ class IaerViewSet(CustomModelViewSet):
                         income += iaer.money
                     else:
                         expenditure -= iaer.money
-                response_data['income'] = income
-                response_data['expenditure'] = expenditure
+                response_data['current_income'] = income
+                response_data['current_expenditure'] = expenditure
+
+                this_month_income = 0
+                this_month_expenditure = 0
+                for iaer in self.get_queryset().filter(Q(created__year = year) & Q(created__month = month)):
+                    if iaer.money > 0:
+                        this_month_income += iaer.money
+                    else:
+                        this_month_expenditure -= iaer.money
+                response_data['this_month_income'] = this_month_income
+                response_data['this_month_expenditure'] = this_month_expenditure
+
+                this_year_income = 0
+                this_year_expenditure = 0
+                for iaer in self.get_queryset().filter(created__year = year):
+                    if iaer.money > 0:
+                        this_year_income += iaer.money
+                    else:
+                        this_year_expenditure -= iaer.money
+                response_data['this_year_income'] = this_year_income
+                response_data['this_year_expenditure'] = this_year_expenditure
+
                 return json_response(response_data, CODE_SUCCESS, MSG_GET_IAERS_SUCCESS)
             else:
                 return invalid_token_response()
