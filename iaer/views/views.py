@@ -118,8 +118,17 @@ class IaerViewSet(CustomModelViewSet):
             token = request.query_params.get('token')
             user = get_user_by_token(token)
             if user:
-                return json_response(super(IaerViewSet, self).list(request, *args, **kwargs).data,
-                                     CODE_SUCCESS, MSG_GET_IAERS_SUCCESS)
+                response_data = super(IaerViewSet, self).list(request, *args, **kwargs).data
+                income = 0
+                expenditure = 0
+                for iaer in self.get_queryset():
+                    if iaer.money > 0:
+                        income += iaer.money
+                    else:
+                        expenditure -= iaer.money
+                response_data['income'] = income
+                response_data['expenditure'] = expenditure
+                return json_response(response_data, CODE_SUCCESS, MSG_GET_IAERS_SUCCESS)
             else:
                 return invalid_token_response()
         except Exception as e:
