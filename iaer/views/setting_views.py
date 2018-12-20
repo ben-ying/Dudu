@@ -55,7 +55,7 @@ class SettingViewSet(CustomModelViewSet):
                 setting.user = user
                 setting.save()
 
-                return json_response(SettingSerializer(setting).data, CODE_SUCCESS, MSG_GET_SETTING_SUCCESS)
+                return json_response(SettingSerializer(setting).data, CODE_SUCCESS, MSG_UPDATE_SETTING_SUCCESS)
             else:
                 return invalid_token_response()
         except Exception as e:
