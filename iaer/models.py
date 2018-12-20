@@ -141,3 +141,11 @@ class Verify(models.Model):
     def __str__(self):
         return self.user.get_username()
 
+
+class Setting(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    home_show_current = models.BooleanField(default=False)
+    home_show_this_month = models.BooleanField(default=False)
+    home_show_this_year = models.BooleanField(default=False)
+    created = models.DateField(editable=False, blank=True, null=True)
+    modified = models.DateField(auto_now=True, blank=True, null=True)

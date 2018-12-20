@@ -70,9 +70,9 @@ class UserViewSet(CustomModelViewSet):
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid()
             token = request.data.get('token')
-            user = get_user_by_token(token)
+            auth_user = get_user_by_token(token)
 
-            if user:
+            if auth_user:
                 return json_response(super(UserViewSet, self).list(request, *args, **kwargs).data,
                                      CODE_SUCCESS, MSG_GET_USERS_SUCCESS)
             else:
@@ -108,25 +108,24 @@ class UserViewSet(CustomModelViewSet):
             elif AuthUser.objects.filter(email__iexact=email) or AuthUser.objects.filter(email__iexact=username):
                 return simple_json_response(CODE_DUPLICATE_EMAIL, MSG_DUPLICATE_EMAIL)
             elif serializer.is_valid():
-                user = AuthUser()
-                user.email = email.lower()
-                user.is_active = True
-                user.is_staff = True
-                user.set_password(password)
-                user.username = username.lower()
-                user.first_name = first_name
-                user.last_name = last_name
-                self.request.user = user
-                pdb.set_trace()
+                auth_user = AuthUser()
+                auth_user.email = email.lower()
+                auth_user.is_active = True
+                auth_user.is_staff = True
+                auth_user.set_password(password)
+                auth_user.username = username.lower()
+                auth_user.first_name = first_name
+                auth_user.last_name = last_name
+                self.request.user = auth_user
                 self.perform_create(serializer)
                 response_data = serializer.data
-                response_data['token'] = Token.objects.create(user=user).key
-                user_user = AuthUser.objects.get(user=user)
-                user_user.locale = response_data['locale']
-                user_user.created = timezone.now()
+                response_data['token'] = Token.objects.create(user=auth_user).key
+                user = User.objects.get(auth_user = auth_user)
+                user.locale = response_data['locale']
+                user.created = timezone.now()
                 if base64:
                     image_name = username + time.strftime('%Y%m%d%H%M%S') + PROFILE_FOOTER_IMAGE
-                user_user.save()
+                user.save()
                 return json_response(response_data, CODE_SUCCESS, MSG_CREATE_USER_SUCCESS)
             else:
                 return simple_json_response(CODE_INVALID_REQUEST, MSG_400)
@@ -140,8 +139,8 @@ class UserViewSet(CustomModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         token = request.query_params.get('token')
         try:
-            user = get_user_by_token(token)
-            if user:
+            auth_user = get_user_by_token(token)
+            if auth_user:
                 response = super(UserViewSet, self).retrieve(request, *args, **kwargs).data
                 return json_response(response, CODE_SUCCESS, MSG_GET_USER_DETAIL_SUCCESS)
             else:

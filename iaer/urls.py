@@ -9,6 +9,7 @@ from iaer.views.views import about_us_view, RedEnvelopeViewSet, IaerViewSet, Cat
 from iaer.views.user_views import UserViewSet, login_view, send_verify_code_view, reset_password_with_verify_code_view
 from iaer.views.user_views import api_root
 from iaer.views.statistics_views import StatisticsCategoryViewSet, StatisticsDateViewSet
+from iaer.views.setting_views import SettingViewSet
 
 # website
 from iaer.views.webviews import index
@@ -67,6 +68,11 @@ api_fund_list = FundViewSet.as_view({
     'get': 'list',
 })
 
+api_setting_detail = SettingViewSet.as_view({
+    'get': 'retrieve',
+    'put': 'update',
+})
+
 # user_login = LoginViewSet.as_view({
 #     'post': 'retrieve',
 # })
@@ -93,6 +99,7 @@ api_urlpatterns = [
     path('statistics/category/', api_statistics_category, name='api-statistics-category'),
     path('statistics/date/', api_statistics_date, name='api-statistics-date'),
     path('funds/', api_fund_list, name='api-fund-list'),
+    path('setting/', api_setting_detail, name='api-setting-detail'),
 ]
 
 urlpatterns = [

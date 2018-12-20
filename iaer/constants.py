@@ -110,4 +110,5 @@ MSG_ADD_RED_ENVELOPE_SUCCESS = _(u'添加红包成功')
 MSG_GET_IAERS_SUCCESS = _(u'获取收支列表成功')
 MSG_DELETE_IAER_SUCCESS = _(u'删除收支成功')
 MSG_ADD_IAER_SUCCESS = _(u'添加收支成功')
-
+# setting
+MSG_GET_SETTING_SUCCESS = _(u'获取设置成功')

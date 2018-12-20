@@ -5,6 +5,7 @@ from .models import RedEnvelope
 from .models import Iaer
 from .models import Fund
 from .models import Category
+from .models import Setting
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -36,3 +37,8 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'sequence', 'created', 'modified')
     search_fields = ('name',)
 admin.site.register(Category, CategoryAdmin)
+
+class SettingAdmin(admin.ModelAdmin):
+    list_display = ('user_id', 'home_show_current', 'home_show_this_month', 'home_show_this_year')
+    search_fields = ('user_id', 'home_show_current', 'home_show_this_month', 'home_show_this_year')
+admin.site.register(Setting, SettingAdmin)
