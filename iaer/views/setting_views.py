@@ -4,7 +4,7 @@ import pdb
 
 from django.utils import timezone
 
-from iaer.constants import CODE_SUCCESS, MSG_INVALID_PASSWORD, MSG_GET_SETTING_SUCCESS
+from iaer.constants import CODE_SUCCESS, MSG_INVALID_PASSWORD, MSG_GET_SETTING_SUCCESS, MSG_UPDATE_SETTING_SUCCESS
 from iaer.utils import json_response, invalid_token_response, get_user_by_token, \
     CustomModelViewSet, save_error_log
 from iaer.serializers.setting import SettingSerializer
