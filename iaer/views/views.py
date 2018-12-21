@@ -176,53 +176,52 @@ class IaerViewSet(CustomModelViewSet):
             flag += 4
 
         if int(user_id) < 0:
-            return Iaer.objects.filter(user_id = -1)
+            # filter delete queryset
+            iaer_id = self.request.data.get('iaer_id', -1)
+            return Iaer.objects.filter(pk = iaer_id)
         else:
-            if int(user_id) < 0:
-                return Iaer.objects.filter(user_id = -1)
+            user_id = User.objects.get(auth_user = user).id
+            if categories:
+                category_names = []
+                category_list = Category.objects.filter(pk__in = ast.literal_eval(categories)) # covert list string to list
+                for category in category_list:
+                    category_names.append(category.name)
+            # years not filter
+            if flag == 1:
+                return Iaer.objects.filter(Q(user_id = user_id) & \
+                                    Q(created__month__in = ast.literal_eval(months)) & \
+                                    Q(category__in = category_names))
+            # months not filter
+            elif flag == 2:
+                return Iaer.objects.filter(Q(user_id = user_id) & \
+                                    Q(created__year__in = ast.literal_eval(years)) & \
+                                    Q(category__in = category_names))
+            # years and months not filter
+            elif flag == 3:
+                return Iaer.objects.filter(Q(user_id = user_id) & \
+                                    Q(category__in = category_names))
+            # categories not filter
+            elif flag == 4:
+                return Iaer.objects.filter(Q(user_id = user_id) & \
+                                    Q(created__year__in = ast.literal_eval(years)) & \
+                                    Q(created__month__in = ast.literal_eval(months)))
+            # years and categories not filter
+            elif flag == 5:
+                return Iaer.objects.filter(Q(user_id = user_id) & \
+                                    Q(created__month__in = ast.literal_eval(months)))
+            # months and categories not filter
+            elif flag == 6:
+                return Iaer.objects.filter(Q(user_id = user_id) & \
+                                    Q(created__year__in = ast.literal_eval(years)))
+            # years, months and categories not filter
+            elif flag == 7:
+                return Iaer.objects.filter(user_id = user_id)
+            # filter years, months and categories
             else:
-                user_id = User.objects.get(auth_user = user).id
-                if categories:
-                    category_names = []
-                    category_list = Category.objects.filter(pk__in = ast.literal_eval(categories)) # covert list string to list
-                    for category in category_list:
-                        category_names.append(category.name)
-                # years not filter
-                if flag == 1:
-                    return Iaer.objects.filter(Q(user_id = user_id) & \
-                                        Q(created__month__in = ast.literal_eval(months)) & \
-                                        Q(category__in = category_names))
-                # months not filter
-                elif flag == 2:
-                    return Iaer.objects.filter(Q(user_id = user_id) & \
-                                        Q(created__year__in = ast.literal_eval(years)) & \
-                                        Q(category__in = category_names))
-                # years and months not filter
-                elif flag == 3:
-                    return Iaer.objects.filter(Q(user_id = user_id) & \
-                                        Q(category__in = category_names))
-                # categories not filter
-                elif flag == 4:
-                    return Iaer.objects.filter(Q(user_id = user_id) & \
-                                        Q(created__year__in = ast.literal_eval(years)) & \
-                                        Q(created__month__in = ast.literal_eval(months)))
-                # years and categories not filter
-                elif flag == 5:
-                    return Iaer.objects.filter(Q(user_id = user_id) & \
-                                        Q(created__month__in = ast.literal_eval(months)))
-                # months and categories not filter
-                elif flag == 6:
-                    return Iaer.objects.filter(Q(user_id = user_id) & \
-                                        Q(created__year__in = ast.literal_eval(years)))
-                # years, months and categories not filter
-                elif flag == 7:
-                    return Iaer.objects.filter(user_id = user_id)
-                # filter years, months and categories
-                else:
-                    return Iaer.objects.filter(Q(user_id = user_id) & \
-                                        Q(created__year__in = ast.literal_eval(years)) & \
-                                        Q(created__month__in = ast.literal_eval(months)) & \
-                                        Q(category__in = category_names))
+                return Iaer.objects.filter(Q(user_id = user_id) & \
+                                    Q(created__year__in = ast.literal_eval(years)) & \
+                                    Q(created__month__in = ast.literal_eval(months)) & \
+                                    Q(category__in = category_names))
 
     def create(self, request, *args, **kwargs):
         try:
@@ -250,8 +249,8 @@ class IaerViewSet(CustomModelViewSet):
     def destroy(self, request, *args, **kwargs):
         try:
             token = request.data.get('token')
-            user = get_user_by_token(token)
-            if user:
+            auth_user = get_user_by_token(token)
+            if auth_user:
                 iaer = self.get_object()
                 if iaer:
                     try:
