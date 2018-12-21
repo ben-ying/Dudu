@@ -161,7 +161,7 @@ class IaerViewSet(CustomModelViewSet):
 
     def get_queryset(self):
         token = self.request.query_params.get('token')
-        user = get_user_by_token(token)
+        auth_user = get_user_by_token(token)
         user_id = self.request.query_params.get('user_id', -1)
         years =  self.request.query_params.get('years', '')
         months =  self.request.query_params.get('months', '')
@@ -177,10 +177,16 @@ class IaerViewSet(CustomModelViewSet):
 
         if int(user_id) < 0:
             # filter delete queryset
-            iaer_id = self.request.data.get('iaer_id', -1)
-            return Iaer.objects.filter(pk = iaer_id)
+            token = self.request.data.get('token')
+            auth_user = get_user_by_token(token)
+            if auth_user:
+                return Iaer.objects.filter(user = User.objects.get(auth_user = auth_user))
+            else:
+                return Iaer.objects.filter(pk = -1)
         else:
-            user_id = User.objects.get(auth_user = user).id
+            if not auth_user:
+                return Iaer.objects.filter(pk = -1)
+            user_id = User.objects.get(auth_user = auth_user).id
             if categories:
                 category_names = []
                 category_list = Category.objects.filter(pk__in = ast.literal_eval(categories)) # covert list string to list
@@ -229,11 +235,11 @@ class IaerViewSet(CustomModelViewSet):
             money = request.data.get('money')
             remark = request.data.get('remark')
             token = request.data.get('token')
-            user = get_user_by_token(token)
+            auth_user = get_user_by_token(token)
 
-            if user:
+            if auth_user:
                 iaer = Iaer()
-                iaer.user = User.objects.get(auth_user = user)
+                iaer.user = User.objects.get(auth_user = auth_user)
                 iaer.money = money
                 iaer.category = category
                 iaer.remark = remark
@@ -268,7 +274,6 @@ class IaerViewSet(CustomModelViewSet):
             else:
                 return invalid_token_response()
         except Exception as e:
-            raise Exception(e)
             return save_error_log(request, e)
 
 
