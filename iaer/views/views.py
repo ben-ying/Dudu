@@ -232,7 +232,7 @@ class IaerViewSet(CustomModelViewSet):
                                     Q(category__in = category_names))
 
             if int(min_money) != 0 or int(max_money) != 0:
-                queryset = queryset.filter(Q(money__lte = max_money) & Q(money__gte = min_money))
+                queryset = queryset.filter(Q(money__abs__lte = max_money) & Q(money__abs__gte = min_money))
 
             return queryset
 
