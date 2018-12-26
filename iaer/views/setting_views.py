@@ -39,6 +39,8 @@ class SettingViewSet(CustomModelViewSet):
         home_show_current = request.data.get('home_show_current', False)
         home_show_this_month = request.data.get('home_show_this_month', False)
         home_show_this_year = request.data.get('home_show_this_year', False)
+        monthly_fund = request.data.get('monthly_fund', 0)
+        yearly_fund = request.data.get('yearly_fund', 0)
 
         try:
             auth_user = get_user_by_token(token)
@@ -52,6 +54,8 @@ class SettingViewSet(CustomModelViewSet):
                 setting.home_show_current = home_show_current
                 setting.home_show_this_month = home_show_this_month
                 setting.home_show_this_year = home_show_this_year
+                setting.monthly_fund = monthly_fund
+                setting.yearly_fund = yearly_fund
                 setting.user = user
                 setting.save()
 
