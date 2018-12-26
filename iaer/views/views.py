@@ -7,6 +7,7 @@ import traceback
 import ast
 
 from datetime import datetime
+from django.db.models import Func, F
 from django.db.models import Q
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -232,7 +233,8 @@ class IaerViewSet(CustomModelViewSet):
                                     Q(category__in = category_names))
 
             if int(min_money) != 0 or int(max_money) != 0:
-                queryset = queryset.filter(Q(money__abs__lte = max_money) & Q(money__abs__gte = min_money))
+                queryset = queryset.annotate(abs_money = Func(F('money'), function='ABS')) \
+                        .filter(Q(abs_money__lte = max_money) & Q(abs_money__gte = min_money))
 
             return queryset
 
