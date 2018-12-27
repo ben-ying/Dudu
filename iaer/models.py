@@ -148,6 +148,6 @@ class Setting(models.Model):
     home_show_this_month = models.BooleanField(default=False)
     home_show_this_year = models.BooleanField(default=False)
     monthly_fund = models.PositiveIntegerField(default=0)
-    yearly_fund = models.PositiveSmallIntegerField(default=0)
+    yearly_fund = models.PositiveIntegerField(default=0)
     created = models.DateField(editable=False, blank=True, null=True)
     modified = models.DateField(auto_now=True, blank=True, null=True)
