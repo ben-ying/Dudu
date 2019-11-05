@@ -2,7 +2,7 @@ from .settings_common import *
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.201', '192.168.0.201', '192.168.0.200', 'raspberry-server.ddns.net', '107.182.27.191', '3.13.2.78']
+ALLOWED_HOSTS = ['mybackend.xyz', 'www.mybackend.xyz', 'localhost', '127.0.0.1', '192.168.1.201', '192.168.0.201', '192.168.0.200', '120.55.48.57']
 
 DATABASES = {
     'default': {
