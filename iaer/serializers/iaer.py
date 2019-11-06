@@ -9,4 +9,4 @@ class IaerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Iaer
-        fields = ['iaer_id', 'user_id', 'money', 'money_type', 'category', 'remark', 'created', 'datetime']
+        fields = ['iaer_id', 'user_id', 'money', 'money_type', 'category', 'date', 'remark', 'created', 'datetime']

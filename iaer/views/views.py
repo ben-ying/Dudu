@@ -244,6 +244,7 @@ class IaerViewSet(CustomModelViewSet):
             money = request.data.get('money')
             remark = request.data.get('remark')
             token = request.data.get('token')
+            date = request.data.get('date')
             auth_user = get_user_by_token(token)
 
             if auth_user:
@@ -253,6 +254,10 @@ class IaerViewSet(CustomModelViewSet):
                 iaer.category = category
                 iaer.remark = remark
                 iaer.created = timezone.now()
+                try:
+                    iaer.date = datetime.strptime(date, '%Y-%m-%d').date()
+                except ValueError:
+                    print("date format error: %s" %date)
                 iaer.save()
                 response = IaerSerializer(iaer).data
                 return json_response(response, CODE_SUCCESS, MSG_ADD_IAER_SUCCESS)

@@ -123,13 +123,14 @@ class Iaer(models.Model):
     created = models.DateTimeField(blank=True, null=True)
     type = models.IntegerField(default=0)
     chart_type = models.IntegerField(default=0)
+    date = models.DateField(blank=True, null=True)
     format = models.CharField(max_length=50, blank=True, null=True)
     datetime = models.DateTimeField(auto_now=True, blank=True, null=True)
     description = TextField(blank=True, null=True)
     timing = models.CharField(max_length=100, blank=True, null=True) # for every week or every month input or consumption
 
     class Meta:
-        ordering = ['-created',]
+        ordering = ['-date',]
 
 
 class Verify(models.Model):
