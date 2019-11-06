@@ -130,7 +130,7 @@ class Iaer(models.Model):
     timing = models.CharField(max_length=100, blank=True, null=True) # for every week or every month input or consumption
 
     class Meta:
-        ordering = ['-date',]
+        ordering = ['-date', '-id']
 
 
 class Verify(models.Model):
