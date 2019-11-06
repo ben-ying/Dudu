@@ -106,11 +106,11 @@ venv.bak/
 
 # photo
 photo/media/
-photo/migrations/
+#photo/migrations/
 photo/static/
 logs/
 myproject/settings.py
 myproject/wsgi.py
 
 # iaer
-iaer/migrations
+#iaer/migrations
