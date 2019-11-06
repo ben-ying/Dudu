@@ -1,10 +1,12 @@
 from django.conf.urls import url
+from django.conf.urls.static import static
 from django.urls import path
 from django.urls import include
 from rest_framework import renderers
 from rest_framework.urlpatterns import format_suffix_patterns
 
 # api
+from myproject import settings
 from iaer.views.views import about_us_view, RedEnvelopeViewSet, IaerViewSet, CategoryViewSet, FundViewSet
 from iaer.views.user_views import UserViewSet, login_view, send_verify_code_view, reset_password_with_verify_code_view
 from iaer.views.user_views import api_root
@@ -113,3 +115,8 @@ urlpatterns = [
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
