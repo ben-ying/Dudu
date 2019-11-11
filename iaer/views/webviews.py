@@ -1,6 +1,7 @@
 import pdb
 
 from rest_framework.authtoken.models import Token
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views.generic.list import ListView
@@ -17,7 +18,14 @@ from iaer.forms.iaer import IaerForm
 
 
 def index(request):
-    return redirect('iaer:users')
+    '''
+    for iaer in Iaer.objects.all():
+        if not iaer.date:
+            iaer.date = iaer.created.date()
+            iaer.save()
+    '''
+    return HttpResponse("Index")
+    #return redirect('iaer:users')
 
 class UserListView(ListView):
     model = User
