@@ -1,0 +1,16 @@
+[Unit]
+Description=Aria Demon
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/aria2c --conf-path=/home/pi/.config/aria2/aria2.config
+Restart=always
+RestartSec=10s
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=arialog
+User=pi
+Group=pi
+
+[Install]
+WantedBy=multi-user.target

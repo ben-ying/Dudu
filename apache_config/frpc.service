@@ -1,0 +1,15 @@
+[Unit]
+Description=Frpc Demon
+
+[Service]
+ExecStart=/home/pi/app/frp_0.29.1_linux_arm/frpc -c /home/pi/app/frp_0.29.1_linux_arm/frpc.ini
+RestartSec=10s
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=frpclog
+User=pi
+Group=pi
+
+[Install]
+WantedBy=multi-user.target
