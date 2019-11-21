@@ -1,0 +1,16 @@
+# sudo vi /usr/lib/systemd/system/stackedit.service
+Description=Stackedit daemon
+
+[Service]
+ExecStart=/usr/bin/node /home/pi/app/stackedit/build/dev-server.js
+Restart=always
+RestartSec=10s
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=stackeditlog
+User=pi
+Group=pi
+
+
+[Install]
+WantedBy=multi-user.target
