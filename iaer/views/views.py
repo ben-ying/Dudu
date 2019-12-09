@@ -284,7 +284,9 @@ class IaerViewSet(CustomModelViewSet):
 
                 if min_money != 0:
                     queryset = queryset.annotate(abs_money = Func(F('money'), function='ABS')) \
-                            .filter(Q(abs_money__gte = min_money) & Q(money_type == 0)).order_by('money')
+                            .filter(Q(abs_money__gte = min_money) & Q(money_type = 0)).order_by('money')
+                    #queryset = queryset.annotate(abs_money = Func(F('money'), function='ABS')) \
+                    #        .filter(Q(abs_money__gte = min_money) & Q(money_lte = 0)).order_by('money')
                 else:
                     queryset = queryset.order_by('money')[:top_list_size]
 
@@ -306,6 +308,10 @@ class IaerViewSet(CustomModelViewSet):
                 iaer.category = category
                 iaer.remark = remark
                 iaer.created = timezone.now()
+                if money > 0:
+                    iaer.money_type = 1
+                else:
+                    iaer.money_type = 0
                 try:
                     iaer.date = datetime.strptime(date, '%Y-%m-%d').date()
                 except ValueError:
