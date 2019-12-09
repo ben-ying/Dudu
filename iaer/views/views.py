@@ -192,13 +192,13 @@ class IaerViewSet(CustomModelViewSet):
             if not auth_user:
                 return Iaer.objects.filter(pk = -1)
             user_id = User.objects.get(auth_user = auth_user).id
-            if categories:
-                category_names = []
-                category_list = Category.objects.filter(pk__in = ast.literal_eval(categories)) # covert list string to list
-                for category in category_list:
-                    category_names.append(category.name)
 
             if top_list == 0:
+                if categories:
+                    category_names = []
+                    category_list = Category.objects.filter(pk__in = ast.literal_eval(categories)) # covert list string to list
+                    for category in category_list:
+                        category_names.append(category.name)
                 # years not filter
                 if flag == 1:
                     queryset = Iaer.objects.filter(Q(user_id = user_id) & \
@@ -236,6 +236,11 @@ class IaerViewSet(CustomModelViewSet):
                                         Q(created__month__in = ast.literal_eval(months)) & \
                                         Q(category__in = category_names))
             else:
+                if categories:
+                    category_names = []
+                    category_list = Category.objects.filter(pk = categories) # covert list string to list
+                    for category in category_list:
+                        category_names.append(category.name)
                 # years not filter
                 if flag == 1:
                     queryset = Iaer.objects.filter(Q(user_id = user_id) & \
@@ -245,7 +250,7 @@ class IaerViewSet(CustomModelViewSet):
                 # months not filter
                 elif flag == 2:
                     queryset = Iaer.objects.filter(Q(user_id = user_id) & \
-                                        Q(created__year__in = ast.literal_eval(years)) & \
+                                        Q(created__year = years) & \
                                         Q(category__in = category_names))\
                                         .order_by('money')[:top_list]
                 # years and months not filter
@@ -256,18 +261,18 @@ class IaerViewSet(CustomModelViewSet):
                 # categories not filter
                 elif flag == 4:
                     queryset = Iaer.objects.filter(Q(user_id = user_id) & \
-                                        Q(created__year__in = ast.literal_eval(years)) & \
-                                        Q(created__month__in = ast.literal_eval(months)))\
+                                        Q(created__year = years) & \
+                                        Q(created__month = months))\
                                         .order_by('money')[:top_list]
                 # years and categories not filter
                 elif flag == 5:
                     queryset = Iaer.objects.filter(Q(user_id = user_id) & \
-                                        Q(created__month__in = ast.literal_eval(months)))\
+                                        Q(created__month = months))\
                                         .order_by('money')[:top_list]
                 # months and categories not filter
                 elif flag == 6:
                     queryset = Iaer.objects.filter(Q(user_id = user_id) & \
-                                        Q(created__year__in = ast.literal_eval(years)))\
+                                        Q(created__year = years))\
                                         .order_by('money')[:top_list]
                 # years, months and categories not filter
                 elif flag == 7:
@@ -276,8 +281,8 @@ class IaerViewSet(CustomModelViewSet):
                 # filter years, months and categories
                 elif flag == 0:
                     queryset = Iaer.objects.filter(Q(user_id = user_id) & \
-                                        Q(created__year__in = ast.literal_eval(years)) & \
-                                        Q(created__month__in = ast.literal_eval(months)) & \
+                                        Q(created__year = years) & \
+                                        Q(created__month = months) & \
                                         Q(category__in = category_names))\
                                         .order_by('monkey')[:top_list]
 
