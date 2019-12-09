@@ -173,9 +173,9 @@ class IaerViewSet(CustomModelViewSet):
         top_list_size = int(self.request.query_params.get('top_list_size', 0))
 
         flag = 0
-        if not years:
+        if not years or years == '0':
             flag += 1
-        if not months:
+        if not months or months == '0':
             flag += 2
         if not categories:
             flag += 4
@@ -250,7 +250,7 @@ class IaerViewSet(CustomModelViewSet):
                                         Q(created__month = months) & \
                                         Q(category = category_names))
                 # months not filter
-                if flag == 2:
+                elif flag == 2:
                     queryset = Iaer.objects.filter(Q(user_id = user_id) & \
                                         Q(created__year = years) & \
                                         Q(category = category_names))
@@ -285,8 +285,6 @@ class IaerViewSet(CustomModelViewSet):
                 if min_money != 0:
                     queryset = queryset.annotate(abs_money = Func(F('money'), function='ABS')) \
                             .filter(Q(abs_money__gte = min_money) & Q(money_type = 0)).order_by('money')
-                    #queryset = queryset.annotate(abs_money = Func(F('money'), function='ABS')) \
-                    #        .filter(Q(abs_money__gte = min_money) & Q(money_lte = 0)).order_by('money')
                 else:
                     queryset = queryset.order_by('money')[:top_list_size]
 
