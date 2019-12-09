@@ -134,25 +134,26 @@ class IaerViewSet(CustomModelViewSet):
                 response_data['current_income'] = income
                 response_data['current_expenditure'] = expenditure
 
-                this_month_income = 0
-                this_month_expenditure = 0
-                for iaer in self.get_queryset().filter(Q(created__year = year) & Q(created__month = month)):
-                    if iaer.money > 0:
-                        this_month_income += iaer.money
-                    else:
-                        this_month_expenditure -= iaer.money
-                response_data['this_month_income'] = this_month_income
-                response_data['this_month_expenditure'] = this_month_expenditure
+                if int(self.request.query_params.get('top_list', 0)) == 0:
+                    this_month_income = 0
+                    this_month_expenditure = 0
+                    for iaer in self.get_queryset().filter(Q(created__year = year) & Q(created__month = month)):
+                        if iaer.money > 0:
+                            this_month_income += iaer.money
+                        else:
+                            this_month_expenditure -= iaer.money
+                    response_data['this_month_income'] = this_month_income
+                    response_data['this_month_expenditure'] = this_month_expenditure
 
-                this_year_income = 0
-                this_year_expenditure = 0
-                for iaer in self.get_queryset().filter(created__year = year):
-                    if iaer.money > 0:
-                        this_year_income += iaer.money
-                    else:
-                        this_year_expenditure -= iaer.money
-                response_data['this_year_income'] = this_year_income
-                response_data['this_year_expenditure'] = this_year_expenditure
+                    this_year_income = 0
+                    this_year_expenditure = 0
+                    for iaer in self.get_queryset().filter(created__year = year):
+                        if iaer.money > 0:
+                            this_year_income += iaer.money
+                        else:
+                            this_year_expenditure -= iaer.money
+                    response_data['this_year_income'] = this_year_income
+                    response_data['this_year_expenditure'] = this_year_expenditure
 
                 return json_response(response_data, CODE_SUCCESS, MSG_GET_IAERS_SUCCESS)
             else:
@@ -167,8 +168,9 @@ class IaerViewSet(CustomModelViewSet):
         years =  self.request.query_params.get('years', '')
         months =  self.request.query_params.get('months', '')
         categories =  self.request.query_params.get('categories', '')
-        min_money = self.request.query_params.get('min_money', 0)
-        max_money = self.request.query_params.get('max_money', 0)
+        min_money = int(self.request.query_params.get('min_money', 0))
+        max_money = int(self.request.query_params.get('max_money', 0))
+        top_list = int(self.request.query_params.get('top_list', 0))
 
         flag = 0
         if not years:
@@ -195,44 +197,91 @@ class IaerViewSet(CustomModelViewSet):
                 category_list = Category.objects.filter(pk__in = ast.literal_eval(categories)) # covert list string to list
                 for category in category_list:
                     category_names.append(category.name)
-            # years not filter
-            if flag == 1:
-                queryset = Iaer.objects.filter(Q(user_id = user_id) & \
-                                    Q(created__month__in = ast.literal_eval(months)) & \
-                                    Q(category__in = category_names))
-            # months not filter
-            elif flag == 2:
-                queryset = Iaer.objects.filter(Q(user_id = user_id) & \
-                                    Q(created__year__in = ast.literal_eval(years)) & \
-                                    Q(category__in = category_names))
-            # years and months not filter
-            elif flag == 3:
-                queryset = Iaer.objects.filter(Q(user_id = user_id) & \
-                                    Q(category__in = category_names))
-            # categories not filter
-            elif flag == 4:
-                queryset = Iaer.objects.filter(Q(user_id = user_id) & \
-                                    Q(created__year__in = ast.literal_eval(years)) & \
-                                    Q(created__month__in = ast.literal_eval(months)))
-            # years and categories not filter
-            elif flag == 5:
-                queryset = Iaer.objects.filter(Q(user_id = user_id) & \
-                                    Q(created__month__in = ast.literal_eval(months)))
-            # months and categories not filter
-            elif flag == 6:
-                queryset = Iaer.objects.filter(Q(user_id = user_id) & \
-                                    Q(created__year__in = ast.literal_eval(years)))
-            # years, months and categories not filter
-            elif flag == 7:
-                queryset = Iaer.objects.filter(user_id = user_id)
-            # filter years, months and categories
-            else:
-                queryset = Iaer.objects.filter(Q(user_id = user_id) & \
-                                    Q(created__year__in = ast.literal_eval(years)) & \
-                                    Q(created__month__in = ast.literal_eval(months)) & \
-                                    Q(category__in = category_names))
 
-            if int(min_money) != 0 or int(max_money) != 0:
+            if top_list == 0:
+                # years not filter
+                if flag == 1:
+                    queryset = Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__month__in = ast.literal_eval(months)) & \
+                                        Q(category__in = category_names))
+                # months not filter
+                elif flag == 2:
+                    queryset = Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__year__in = ast.literal_eval(years)) & \
+                                        Q(category__in = category_names))
+                # years and months not filter
+                elif flag == 3:
+                    queryset = Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(category__in = category_names))
+                # categories not filter
+                elif flag == 4:
+                    queryset = Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__year__in = ast.literal_eval(years)) & \
+                                        Q(created__month__in = ast.literal_eval(months)))
+                # years and categories not filter
+                elif flag == 5:
+                    queryset = Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__month__in = ast.literal_eval(months)))
+                # months and categories not filter
+                elif flag == 6:
+                    queryset = Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__year__in = ast.literal_eval(years)))
+                # years, months and categories not filter
+                elif flag == 7:
+                    queryset = Iaer.objects.filter(user_id = user_id)
+                # filter years, months and categories
+                elif flag == 0:
+                    queryset = Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__year__in = ast.literal_eval(years)) & \
+                                        Q(created__month__in = ast.literal_eval(months)) & \
+                                        Q(category__in = category_names))
+            else:
+                # years not filter
+                if flag == 1:
+                    queryset = Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__month__in = ast.literal_eval(months)) & \
+                                        Q(category__in = category_names))\
+                                        .order_by('money')[:top_list]
+                # months not filter
+                elif flag == 2:
+                    queryset = Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__year__in = ast.literal_eval(years)) & \
+                                        Q(category__in = category_names))\
+                                        .order_by('money')[:top_list]
+                # years and months not filter
+                elif flag == 3:
+                    queryset = Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(category__in = category_names))\
+                                        .order_by('money')[:top_list]
+                # categories not filter
+                elif flag == 4:
+                    queryset = Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__year__in = ast.literal_eval(years)) & \
+                                        Q(created__month__in = ast.literal_eval(months)))\
+                                        .order_by('money')[:top_list]
+                # years and categories not filter
+                elif flag == 5:
+                    queryset = Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__month__in = ast.literal_eval(months)))\
+                                        .order_by('money')[:top_list]
+                # months and categories not filter
+                elif flag == 6:
+                    queryset = Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__year__in = ast.literal_eval(years)))\
+                                        .order_by('money')[:top_list]
+                # years, months and categories not filter
+                elif flag == 7:
+                    queryset = Iaer.objects.filter(user_id = user_id)\
+                                        .order_by('money')[:top_list]
+                # filter years, months and categories
+                elif flag == 0:
+                    queryset = Iaer.objects.filter(Q(user_id = user_id) & \
+                                        Q(created__year__in = ast.literal_eval(years)) & \
+                                        Q(created__month__in = ast.literal_eval(months)) & \
+                                        Q(category__in = category_names))\
+                                        .order_by('monkey')[:top_list]
+
+            if min_money != 0 or max_money != 0:
                 queryset = queryset.annotate(abs_money = Func(F('money'), function='ABS')) \
                         .filter(Q(abs_money__lte = max_money) & Q(abs_money__gte = min_money))
 
