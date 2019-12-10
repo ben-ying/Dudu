@@ -306,7 +306,7 @@ class IaerViewSet(CustomModelViewSet):
                 iaer.category = category
                 iaer.remark = remark
                 iaer.created = timezone.now()
-                if money > 0:
+                if int(money) > 0:
                     iaer.money_type = 1
                 else:
                     iaer.money_type = 0
