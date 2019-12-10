@@ -240,24 +240,20 @@ class IaerViewSet(CustomModelViewSet):
                     queryset = queryset.annotate(abs_money = Func(F('money'), function='ABS')) \
                             .filter(Q(abs_money__lte = max_money) & Q(abs_money__gte = min_money))
             else:
-                if categories:
-                    category_list = Category.objects.filter(pk = categories) # covert list string to list
-                    for category in category_list:
-                        category_names.append(category.name)
                 # years not filter
                 if flag == 1:
                     queryset = Iaer.objects.filter(Q(user_id = user_id) & \
                                         Q(created__month = months) & \
-                                        Q(category = category_names))
+                                        Q(category = categories))
                 # months not filter
                 elif flag == 2:
                     queryset = Iaer.objects.filter(Q(user_id = user_id) & \
                                         Q(created__year = years) & \
-                                        Q(category = category_names))
+                                        Q(category = categories))
                 # years and months not filter
                 elif flag == 3:
                     queryset = Iaer.objects.filter(Q(user_id = user_id) & \
-                                        Q(category = category_names))
+                                        Q(category = categories))
                 # categories not filter
                 elif flag == 4:
                     queryset = Iaer.objects.filter(Q(user_id = user_id) & \
@@ -279,7 +275,7 @@ class IaerViewSet(CustomModelViewSet):
                     queryset = Iaer.objects.filter(Q(user_id = user_id) & \
                                         Q(created__year = years) & \
                                         Q(created__month = months) & \
-                                        Q(category = category_names))
+                                        Q(category = categories))
 
 
                 if min_money != 0:
