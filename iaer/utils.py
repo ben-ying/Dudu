@@ -130,7 +130,8 @@ def get_user_by_token(token):
 def save_error_log(request, exception):
     view_name = request.resolver_match.view_name
     # todo
-    return simple_json_response(CODE_EXCEPTION, MSG_402)
+    #return simple_json_response(CODE_EXCEPTION, MSG_402)
+    return simple_json_response(CODE_EXCEPTION, exception)
 
 
 class LargeResultsSetPagination(PageNumberPagination):
