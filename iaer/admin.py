@@ -6,6 +6,7 @@ from .models import Iaer
 from .models import Fund
 from .models import Category
 from .models import Setting
+from .models import About
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -38,7 +39,14 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 admin.site.register(Category, CategoryAdmin)
 
+
 class SettingAdmin(admin.ModelAdmin):
     list_display = ('user_id', 'home_show_current', 'home_show_this_month', 'home_show_this_year')
     search_fields = ('user_id', 'home_show_current', 'home_show_this_month', 'home_show_this_year')
 admin.site.register(Setting, SettingAdmin)
+
+
+class AboutAdmin(admin.ModelAdmin):
+    list_display = ('version_name', 'version_code', 'category', 'apk', 'comment')
+    search_fields = ('version_name', 'version_code', 'category')
+admin.site.register(About, AboutAdmin)

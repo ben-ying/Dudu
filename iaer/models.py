@@ -3,6 +3,8 @@
 
 from __future__ import unicode_literals
 
+from django.utils.translation import gettext as _
+
 import os
 
 from django.db import models
@@ -152,3 +154,16 @@ class Setting(models.Model):
     yearly_fund = models.PositiveIntegerField(default=0)
     created = models.DateField(editable=False, blank=True, null=True)
     modified = models.DateField(auto_now=True, blank=True, null=True)
+
+
+class About(models.Model):
+    CATEGORY_CHOICES = (
+        (1, _("Release")),        
+        (2, _("Debug")),        
+        (3, _("Test")),        
+    )
+    version_name = models.CharField(max_length=20)
+    version_code = models.PositiveIntegerField()
+    apk = models.FileField(upload_to="apks/")
+    category = models.PositiveIntegerField(choices=CATEGORY_CHOICES, default=1)
+    comment = models.TextField(max_length=1024)
