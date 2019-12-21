@@ -113,3 +113,5 @@ MSG_ADD_IAER_SUCCESS = _(u'添加收支成功')
 # setting
 MSG_GET_SETTING_SUCCESS = _(u'获取设置成功')
 MSG_UPDATE_SETTING_SUCCESS = _(u'更新设置成功')
+# about
+MSG_GET_ABOUT_SUCCESS = _(u'获取关于成功')

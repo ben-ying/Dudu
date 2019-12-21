@@ -7,7 +7,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 # api
 from myproject import settings
-from iaer.views.views import about_us_view, RedEnvelopeViewSet, IaerViewSet, CategoryViewSet, FundViewSet
+from iaer.views.views import about_us_view, RedEnvelopeViewSet, IaerViewSet, CategoryViewSet, FundViewSet, AboutViewSet
 from iaer.views.user_views import UserViewSet, login_view, send_verify_code_view, reset_password_with_verify_code_view
 from iaer.views.user_views import api_root
 from iaer.views.statistics_views import StatisticsCategoryViewSet, StatisticsDateViewSet
@@ -75,6 +75,10 @@ api_setting_detail = SettingViewSet.as_view({
     'put': 'update',
 })
 
+api_about_list = AboutViewSet.as_view({
+    'get': 'list',    
+})
+
 # user_login = LoginViewSet.as_view({
 #     'post': 'retrieve',
 # })
@@ -102,6 +106,7 @@ api_urlpatterns = [
     path('statistics/date/', api_statistics_date, name='api-statistics-date'),
     path('funds/', api_fund_list, name='api-fund-list'),
     path('setting/', api_setting_detail, name='api-setting-detail'),
+    path('about/', api_about_list, name='api-about-list'),
 ]
 
 urlpatterns = [

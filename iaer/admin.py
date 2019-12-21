@@ -47,6 +47,6 @@ admin.site.register(Setting, SettingAdmin)
 
 
 class AboutAdmin(admin.ModelAdmin):
-    list_display = ('version_name', 'version_code', 'category', 'apk', 'comment')
+    list_display = ('version_name', 'version_code', 'category', 'apk', 'comment', 'datetime')
     search_fields = ('version_name', 'version_code', 'category')
 admin.site.register(About, AboutAdmin)
