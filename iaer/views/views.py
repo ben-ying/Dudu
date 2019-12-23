@@ -367,9 +367,18 @@ class FundViewSet(CustomModelViewSet):
 
 
 class AboutViewSet(CustomModelViewSet):
-    queryset = About.objects.all()
     serializer_class = AboutSerializer
 
-    def list(self, request, *args, **kwargs):
-        return json_response(super(AboutViewSet, self).list(request, *args, **kwargs).data,
-                         CODE_SUCCESS, MSG_GET_ABOUT_SUCCESS)
+    def retrieve(self, request, *args, **kwargs):
+        if About.objects.all():
+            about = About.objects.all().order_by('-pk')
+        else:
+            about = About()
+            about.id = -1
+            about.version_name = '-1'
+            about.version_code = -1
+            about.category = -1
+            about.comment = ''
+            about.datetime = timezone.now()
+        return json_response(AboutSerializer(about).data, CODE_SUCCESS, MSG_GET_ABOUT_SUCCESS)
+

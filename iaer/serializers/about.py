@@ -13,5 +13,8 @@ class AboutSerializer(serializers.ModelSerializer):
 
     def get_apk_url(self, about):
         request = self.context.get('request')
-        apk_url = about.apk.url
-        return request.build_absolute_uri(apk_url)
+        if about.apk:
+            apk_url = about.apk.url
+            return request.build_absolute_uri(apk_url)
+        else:
+            return ''

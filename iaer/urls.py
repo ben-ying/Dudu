@@ -75,8 +75,8 @@ api_setting_detail = SettingViewSet.as_view({
     'put': 'update',
 })
 
-api_about_list = AboutViewSet.as_view({
-    'get': 'list',    
+api_about_detail = AboutViewSet.as_view({
+    'get': 'retrieve',    
 })
 
 # user_login = LoginViewSet.as_view({
@@ -106,7 +106,7 @@ api_urlpatterns = [
     path('statistics/date/', api_statistics_date, name='api-statistics-date'),
     path('funds/', api_fund_list, name='api-fund-list'),
     path('setting/', api_setting_detail, name='api-setting-detail'),
-    path('about/', api_about_list, name='api-about-list'),
+    path('about/', api_about_detail, name='api-about-detail'),
 ]
 
 urlpatterns = [

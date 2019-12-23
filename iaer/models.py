@@ -165,7 +165,7 @@ class About(models.Model):
     )
     version_name = models.CharField(max_length=20)
     version_code = models.PositiveIntegerField()
-    apk = models.FileField(upload_to="apks/")
+    apk = models.FileField(upload_to="apks/", blank=True, null=True)
     category = models.PositiveIntegerField(choices=CATEGORY_CHOICES, default=1)
     comment = models.TextField(max_length=1024)
     datetime = models.DateTimeField(auto_now=True, blank=True, null=True)
