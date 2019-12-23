@@ -9,7 +9,7 @@ class AboutSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = About
-        fields = ['about_id', 'version_name', 'version_code', 'apk_url', 'category', 'comment', 'datetime']
+        fields = ['about_id', 'name', 'version_name', 'version_code', 'apk_url', 'category', 'comment', 'datetime']
 
     def get_apk_url(self, about):
         request = self.context.get('request')

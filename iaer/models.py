@@ -5,8 +5,11 @@ from __future__ import unicode_literals
 
 from django.utils.translation import gettext as _
 
+import json
+import re
 import os
 
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.db.models import TextField
 from django.forms import IntegerField
@@ -119,8 +122,8 @@ class RedEnvelope(models.Model):
 class Iaer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     money = models.IntegerField()
-    #category = models.CharField(max_length=30, default=0)
-    category = models.CharField(max_length=30, choices = Category.objects.category_choices(), default=0)
+    category = models.CharField(max_length=30, default=0)
+    #category = models.CharField(max_length=30, choices = Category.objects.category_choices(), default=0)
     money_type = models.IntegerField(default=0)  # 0 for rmb, 1 for dollar
     remark = models.CharField(max_length=100)
     created = models.DateTimeField(blank=True, null=True)
@@ -163,9 +166,28 @@ class About(models.Model):
         (2, _("Debug")),        
         (3, _("Test")),        
     )
-    version_name = models.CharField(max_length=20)
-    version_code = models.PositiveIntegerField()
-    apk = models.FileField(upload_to="apks/", blank=True, null=True)
+    name = models.CharField(max_length=20, blank=True, null=True)
+    version_name = models.CharField(max_length=20, blank=True, null=True)
+    version_code = models.PositiveIntegerField(blank=True, null=True)
+    apk = models.FileField(upload_to="apks/", validators=[FileExtensionValidator(['apk'])])
+    apk_json = models.FileField(upload_to="apks/", validators=[FileExtensionValidator(['json'])])
     category = models.PositiveIntegerField(choices=CATEGORY_CHOICES, default=1)
     comment = models.TextField(max_length=1024)
     datetime = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        super(About, self).save(*args, **kwargs)
+        if not self.name or not self.version_code:
+            with open(self.apk_json.path, 'r') as f:
+                data = json.load(f)
+                self.version_name = data[0]['apkInfo']['versionName']
+                self.version_code = data[0]['apkInfo']['versionCode']
+                self.name = 'Iaer' + self.version_name + '.apk'
+                old_apk_path = self.apk.path
+                old_json_path = self.apk_json.path
+                self.apk.name = self.apk.name.replace(os.path.basename(self.apk.name), self.name)
+                self.apk_json.name = self.apk_json.name.replace(os.path.basename(self.apk_json.name), self.name.replace('.apk', '.json'))
+                os.rename(old_apk_path, self.apk.path)
+                os.rename(old_json_path, self.apk_json.path)
+                self.save()
+                
