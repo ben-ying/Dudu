@@ -371,7 +371,7 @@ class AboutViewSet(CustomModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         if About.objects.all():
-            about = About.objects.all().order_by('-pk')
+            about = About.objects.all().order_by('-pk')[0]
         else:
             about = About()
             about.id = -1
@@ -380,5 +380,5 @@ class AboutViewSet(CustomModelViewSet):
             about.category = -1
             about.comment = ''
             about.datetime = timezone.now()
-        return json_response(AboutSerializer(about).data, CODE_SUCCESS, MSG_GET_ABOUT_SUCCESS)
+        return json_response(AboutSerializer(about, context={"request": request}).data, CODE_SUCCESS, MSG_GET_ABOUT_SUCCESS)
 

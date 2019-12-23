@@ -119,8 +119,8 @@ class RedEnvelope(models.Model):
 class Iaer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     money = models.IntegerField()
-    category = models.CharField(max_length=30, default=0)
-    #category = models.CharField(max_length=30, choices = Category.objects.category_choices(), default=0)
+    #category = models.CharField(max_length=30, default=0)
+    category = models.CharField(max_length=30, choices = Category.objects.category_choices(), default=0)
     money_type = models.IntegerField(default=0)  # 0 for rmb, 1 for dollar
     remark = models.CharField(max_length=100)
     created = models.DateTimeField(blank=True, null=True)
