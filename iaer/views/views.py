@@ -375,8 +375,8 @@ class AboutViewSet(CustomModelViewSet):
         else:
             about = About()
             about.id = -1
-            about.version_name = '-1'
-            about.version_code = -1
+            about.version_name = '1.0'
+            about.version_code = 1
             about.category = -1
             about.comment = ''
             about.datetime = timezone.now()
