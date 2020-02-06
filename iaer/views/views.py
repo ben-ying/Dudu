@@ -49,8 +49,13 @@ class RedEnvelopeViewSet(CustomModelViewSet):
             token = request.query_params.get('token')
             user = get_user_by_token(token)
             if user:
-                return json_response(super(RedEnvelopeViewSet, self).list(request, *args, **kwargs).data,
-                                     CODE_SUCCESS, MSG_GET_RED_ENVELOPES_SUCCESS)
+                total = 0
+                queryset = self.get_queryset()
+                for rer in queryset:
+                    total += int(rer.money)
+                response_data = super(RedEnvelopeViewSet, self).list(request, *args, **kwargs).data
+                response_data['total'] = total
+                return json_response(response_data, CODE_SUCCESS, MSG_GET_RED_ENVELOPES_SUCCESS)
             else:
                 return invalid_token_response()
         except Exception as e:
