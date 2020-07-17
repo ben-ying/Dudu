@@ -1,7 +1,7 @@
 # common
 Django==2.0.2
 Pillow
-psycopg2 # Postgres, ubuntu use pip install, mac download app(http://postgresapp.com), Raspbian: https://github.com/neilcollins/piconga/wiki/Server-Install:-Raspberry-Pi(version: 9.6)
+# psycopg2 # Postgres, ubuntu use pip install, mac download app(http://postgresapp.com), Raspbian: https://github.com/neilcollins/piconga/wiki/Server-Install:-Raspberry-Pi(version: 9.6)
 
 # video/image metadata
 # hachoir-metadata==1.3.3
@@ -33,3 +33,5 @@ coreapi-cli # coreapi get http://127.0.0.1:8000/schema/; coreapi action users li
 #sqlparse # use for pgadmin
 oss2
 #Apache for Raspbian: sudo apt-get install apache2 libapache2-mod-wsgi
+
+django-extensions
