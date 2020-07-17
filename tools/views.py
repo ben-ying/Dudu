@@ -21,21 +21,6 @@ def exchange(request):
     return HttpResponse('%s:%s' %(code, message))
 
 
-def query_exchange_rate(method='GET'):
-    url = 'http://op.juhe.cn/onebox/exchange/query'
-    params = {
-        'key' : APP_KEY, 
-    }
-
-    error_code, message = get_response_data(url, params, method)
-    if error_code == SUCCESS_ERROR_CODE:
-        name = message['list'][0]
-        code = message['list'][1]
-        Currency.objects.update_or_create(
-            code=code, defaults={'name': name, 'code': code, 'created': timezone.now()}
-        )
-
-
 def query_specific_exchange_rate(from_currency, to_currency, method='GET'):
     url = 'http://op.juhe.cn/onebox/exchange/currency'
     params = {
@@ -59,12 +44,9 @@ def get_response_data(url, params, method='GET'):
     if res:
         error_code = res['error_code']
         if error_code == SUCCESS_ERROR_CODE:
-            print('%s: %s' %(res['error_code'], res['result']))
             return error_code, res['result']
         else:
-            print('%s: %s' %(res['error_code'], res['reason']))
             return error_code, res['reason']
     else:
-        print('1404: request api error')
         return 1404, 'request api error'
 
