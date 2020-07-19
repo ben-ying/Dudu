@@ -106,7 +106,7 @@ class Migration(migrations.Migration):
             name='User',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_master_user', models.BooleanField(default=False)),
+                ('is_main_user', models.BooleanField(default=False)),
                 ('phone', models.CharField(blank=True, max_length=30, null=True)),
                 ('gender', models.PositiveSmallIntegerField(default=2)),
                 ('profile', models.CharField(blank=True, max_length=200, null=True)),
@@ -124,7 +124,7 @@ class Migration(migrations.Migration):
                 ('is_phone_activate', models.BooleanField(default=False)),
                 ('auth_user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='uss', to=settings.AUTH_USER_MODEL)),
                 ('fund', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='iaer.Fund')),
-                ('slave_user', models.ManyToManyField(blank=True, related_name='_user_slave_user_+', to='iaer.User')),
+                ('subordinate_user', models.ManyToManyField(blank=True, related_name='_user_subordinate_user_+', to='iaer.User')),
             ],
         ),
         migrations.CreateModel(
