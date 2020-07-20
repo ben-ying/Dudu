@@ -2,14 +2,14 @@ from django.utils import timezone
 
 from tools.models import Currency
 from tools.models import Exchange
-from tools.views import SUCCESS_ERROR_CODE
-from tools.views import APP_KEY
-from tools.views import get_response_data
+from tools.exchange_views import SUCCESS_ERROR_CODE
+from tools.exchange_views import APP_KEY
+from tools.exchange_views import get_response_data
 
 
 
 # Every one hour execute once 
-# crontab: 0 */1 * * * ~/app/venv/bin/python ~/app/DjangoApps/manage.py runscript init_common_currency_rate_by_frequency > /tmp/cronlog.txt 2>&1
+# crontab: 0 */1 * * * ~/app/venv/bin/python ~/app/DjangoApps/manage.py runscript exchange_init_common_currency_rate_by_frequency > /tmp/cronlog.txt 2>&1
 def run():
     url = 'http://op.juhe.cn/onebox/exchange/query'
     params = {

@@ -1,9 +1,9 @@
 from django.utils import timezone
 
 from tools.models import Currency
-from tools.views import SUCCESS_ERROR_CODE
-from tools.views import APP_KEY
-from tools.views import get_response_data
+from tools.exchange_views import SUCCESS_ERROR_CODE
+from tools.exchange_views import APP_KEY
+from tools.exchange_views import get_response_data
 
 
 
@@ -26,8 +26,8 @@ def run():
             if created:
                 currency.created = timezone.now()
                 currency.save()
-                print('Currency %s(%s) created!' %(code_s, name_s))
+                print('%s Currency %s(%s) created!' %(str(currency.created), code_s, name_s))
             else:
-                print('Currency %s(%s) updated!' %(code_s, name_s))
+                print('%s Currency %s(%s) updated!' %(str(currency.created), code_s, name_s))
     else:
         print('%s: %s' %(error_code, message))
