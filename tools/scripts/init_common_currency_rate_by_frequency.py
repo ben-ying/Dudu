@@ -8,7 +8,8 @@ from tools.views import get_response_data
 
 
 
-# Every xxx(crontab) execute once 
+# Every one hour execute once 
+# crontab: 0 */1 * * * ~/app/venv/bin/python ~/app/DjangoApps/manage.py runscript init_common_currency_rate_by_frequency > /tmp/cronlog.txt 2>&1
 def run():
     url = 'http://op.juhe.cn/onebox/exchange/query'
     params = {
@@ -42,8 +43,8 @@ def run():
             if created:
                 exchange.created = timezone.now()
                 exchange.save()
-                print('Exchange %s created!' %(exchange))
+                print('%s Exchange %s created!' %(str(exchange.created), exchange))
             else:
-                print('Exchange %s updated!' %(exchange))
+                print('%s Exchange %s updated!' %(str(exchange.created), exchange))
     else:
         print('%s: %s' %(error_code, message))
