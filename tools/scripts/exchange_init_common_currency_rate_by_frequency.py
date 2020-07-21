@@ -9,6 +9,7 @@ from tools.views.exchange_views import get_response_data
 
 
 # Every one hour execute once 
+# https://django-extensions.readthedocs.io/en/latest/runscript.html
 # crontab: 0 */1 * * * ~/app/venv/bin/python ~/app/DjangoApps/manage.py runscript exchange_init_common_currency_rate_by_frequency > /tmp/cronlog.txt 2>&1
 def run():
     url = 'http://op.juhe.cn/onebox/exchange/query'
