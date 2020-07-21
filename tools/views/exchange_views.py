@@ -7,13 +7,16 @@ from urllib.parse import urlencode
 from tools.constants import CODE_NOT_EXISTS
 from tools.constants import CODE_SUCCESS
 from tools.constants import MSG_GET_EXCHANGE_RATE_SUCCESS
+from tools.constants import MSG_GET_CURRENCY_LIST_SUCCESS
 from tools.constants import MSG_CURRENCY_NOT_EXISTS
 from tools.models import Currency
 from tools.models import ExchangeRate
 from tools.serializers.exchange import ExchangeRateSerializer
+from tools.serializers.currency import CurrencySerializer
 from tools.utils import simple_json_response
 from tools.utils import json_response
 from tools.utils import CustomModelViewSet
+from tools.utils import LargeResultsSetPagination
 
 import json, urllib
 
@@ -73,6 +76,21 @@ class ExchangeViewSet(CustomModelViewSet):
                     | Q(from_currency = to_currency_s, to_currency = from_currency_s))
         else:
             return ExchangeRate.objects.none()
+
+
+class CurrencyViewSet(CustomModelViewSet):
+    serializer_class = CurrencySerializer
+    pagination_class = LargeResultsSetPagination
+
+    def list(self, request, *args, **kwargs):
+        response_data = super(CustomModelViewSet, self).list(request, *args, **kwargs).data 
+        if len(self.get_queryset()) > 0:
+            response_data['created'] = str(self.get_queryset()[0].created)
+            response_data['modified'] = str(self.get_queryset()[0].modified)
+        return json_response(response_data, CODE_SUCCESS, MSG_GET_CURRENCY_LIST_SUCCESS)
+
+    def get_queryset(self):
+        return Currency.objects.all()
 
 
 def get_response_data(url, params, method='GET'):

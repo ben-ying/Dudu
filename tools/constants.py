@@ -12,3 +12,7 @@ CODE_NOT_EXISTS = 404
 # exchagne
 MSG_GET_EXCHANGE_RATE_SUCCESS = _(u'获取汇率数据成功')
 MSG_CURRENCY_NOT_EXISTS = _(u'当前查询的货币不存在')
+
+# currency
+MSG_GET_CURRENCY_LIST_SUCCESS = _(u'获取货币列表成功')
+
