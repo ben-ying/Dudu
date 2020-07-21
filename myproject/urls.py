@@ -24,5 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('photo/', include('photo.urls')),
     path('iaer/', include('iaer.urls')),
+    path('tools/', include('tools.urls')),
     path('', include('iaer.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

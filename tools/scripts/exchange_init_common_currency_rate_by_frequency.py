@@ -1,10 +1,10 @@
 from django.utils import timezone
 
 from tools.models import Currency
-from tools.models import Exchange
-from tools.exchange_views import SUCCESS_ERROR_CODE
-from tools.exchange_views import APP_KEY
-from tools.exchange_views import get_response_data
+from tools.models import CommonExchange
+from tools.views.exchange_views import SUCCESS_ERROR_CODE
+from tools.views.exchange_views import APP_KEY
+from tools.views.exchange_views import get_response_data
 
 
 
@@ -29,7 +29,7 @@ def run():
             m_sell_price_s = float(item[4])
             bank_conversion_price_s = float(item[5])
             create_s = timezone.now()
-            exchange, created = Exchange.objects.update_or_create(
+            common_exchange, created = CommonExchange.objects.update_or_create(
                     from_currency = from_currency_s, defaults = {'from_currency': from_currency_s, \
                             'to_currency': to_currency_s, \
                             'f_buy_price': f_buy_price_s, \
@@ -37,14 +37,15 @@ def run():
                             'm_buy_price': m_buy_price_s, \
                             'f_sell_price': f_sell_price_s, \
                             'm_sell_price': m_sell_price_s, \
-                            'bank_conversion_price': bank_conversion_price_s
+                            'bank_conversion_price': bank_conversion_price_s, \
+                            'is_common': True
                             }        
             )
             if created:
-                exchange.created = timezone.now()
-                exchange.save()
-                print('%s Exchange %s created!' %(str(exchange.created), exchange))
+                common_exchange.created = timezone.now()
+                common_exchange.save()
+                print('%s CommonExchange %s created!' %(str(common_exchange.created), common_exchange))
             else:
-                print('%s Exchange %s updated!' %(str(exchange.created), exchange))
+                print('%s CommonExchange %s updated!' %(str(common_exchange.created), common_exchange))
     else:
         print('%s: %s' %(error_code, message))

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 rm -rf iaer/migrations/00*
 rm -rf photo/migrations/00*
+rm -rf tools/migrations/00*
 #rm -rf db.sqlite3
 dropdb myproject
 createdb myproject

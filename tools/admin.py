@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from .models import Currency
-from .models import Exchange
+from .models import CommonExchange
+from .models import ExchangeRate
 
 
 
@@ -13,8 +14,16 @@ class CurrencyAdmin(admin.ModelAdmin):
 admin.site.register(Currency, CurrencyAdmin)
 
 
-class ExchangeAdmin(admin.ModelAdmin):
+class CommonExchangeAdmin(admin.ModelAdmin):
     list_display = ('from_currency', 'to_currency', 'transaction_unit', 'f_buy_price', \
             'm_buy_price', 'f_sell_price', 'm_sell_price', 'bank_conversion_price', 'created', 'modified')
     search_fields = ('from_currency', 'to_currency')
-admin.site.register(Exchange, ExchangeAdmin)
+admin.site.register(CommonExchange, CommonExchangeAdmin)
+
+
+class ExchangeRateAdmin(admin.ModelAdmin):
+    list_display = ('from_currency', 'to_currency', 'exchange', 'result', 'update_time', 'created', 'modified')
+    fields = ('from_currency', 'to_currency', 'exchange', 'result', 'update_time', 'created', 'modified')
+    search_fields = ('from_currency', 'to_currency', 'exchange', 'result')
+    readonly_fields = ('from_currency', 'to_currency', 'exchange', 'result', 'update_time', 'created', 'modified')
+admin.site.register(ExchangeRate, ExchangeRateAdmin)
