@@ -8,6 +8,8 @@ from tools.views.exchange_views import get_response_data
 
 
 # Execute only once
+# https://django-extensions.readthedocs.io/en/latest/runscript.html
+# ~/app/venv/bin/python ~/app/DjangoApps/manage.py runscript exchange_init_currency_list  
 def run():
     url = 'http://op.juhe.cn/onebox/exchange/list'
     params = {

@@ -36,6 +36,11 @@ from iaer.utils import json_response, simple_json_response, invalid_token_respon
 
 
 def about_us_view(request):
+    '''
+    for iaer in Iaer.objects.filter(category = Category.objects.get(name = '小孩尿布').name):
+        iaer.category = Category.objects.get(name = '小孩生活用品').name
+        iaer.save()
+    '''
     return HttpResponse(MSG_NO_CONTENT)
 
 
