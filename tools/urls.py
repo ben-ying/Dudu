@@ -18,8 +18,8 @@ api_query_currency_list = CurrencyViewSet.as_view({
 app_name = 'tools'
 api_urlpatterns = [
     path('', api_root, name='api-root'),
-    path('exchange', api_query_exchange_rate, name='query-exchange-rate'),
-    path('currencies', api_query_currency_list, name='query-currency-list'),
+    path('exchange/', api_query_exchange_rate, name='query-exchange-rate'),
+    path('currencies/', api_query_currency_list, name='query-currency-list'),
 ]
 
 urlpatterns = [
