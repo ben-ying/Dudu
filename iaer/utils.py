@@ -131,7 +131,8 @@ def save_error_log(request, exception):
     view_name = request.resolver_match.view_name
     # todo
     #return simple_json_response(CODE_EXCEPTION, MSG_402)
-    return simple_json_response(CODE_EXCEPTION, exception)
+    #raise Exception(view_name + ': ' + str(exception))
+    return simple_json_response(CODE_EXCEPTION, view_name + ': ' + str(exception))
 
 
 class LargeResultsSetPagination(PageNumberPagination):

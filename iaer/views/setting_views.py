@@ -25,7 +25,7 @@ class SettingViewSet(CustomModelViewSet):
                     setting = Setting.objects.get(user_id = user.id)
                 else:
                     setting = Setting()
-                    setting.created = timezone.now()
+                    setting.created = timezone.now().date()
                 setting.user = user
                 setting.save()
                 return json_response(SettingSerializer(setting).data, CODE_SUCCESS, MSG_GET_SETTING_SUCCESS)

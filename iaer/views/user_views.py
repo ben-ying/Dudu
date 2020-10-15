@@ -132,9 +132,10 @@ class UserViewSet(CustomModelViewSet):
         except Exception as e:
             return save_error_log(request, e)
 
+
     def perform_create(self, serializer):
         self.request.user.save()
-        serializer.save(user=self.request.user)
+        serializer.save(auth_user_id=self.request.user.id)
 
     def retrieve(self, request, *args, **kwargs):
         token = request.query_params.get('token')
