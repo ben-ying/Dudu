@@ -238,17 +238,15 @@ def send_verify_code_view(request):
     try:
         if not email:
             return simple_json_response(CODE_EMPTY_EMAIL, MSG_EMPTY_EMAIL)
-        elif not User.objects.filter(email=email.lower()) and \
-                not User.objects.filter(username=email.lower()):
+        elif not User.objects.filter(auth_user__email=email.lower()) and \
+                not User.objects.filter(auth_user__username=email.lower()):
             return simple_json_response(CODE_INVALID_EMAIL, MSG_NO_SUCH_EMAIL)
 
         user = None
-        if User.objects.filter(email=email.lower()):
-            user = User.objects.get(email=email.lower())
-            user = User.objects.get(user=user)
-        elif User.objects.filter(username=email.lower()):
-            user = User.objects.get(username=email.lower())
-            user = User.objects.get(user=user)
+        if User.objects.filter(auth_user__email=email.lower()):
+            user = User.objects.get(auth_user__email=email.lower())
+        elif User.objects.filter(auth_user__username=email.lower()):
+            user = User.objects.get(auth_user__username=email.lower())
 
         verify_code = get_random_string(length=6, allowed_chars='0123456789').lower()
         send_email(user, email, verify_code)
@@ -268,7 +266,9 @@ def send_email(user, to_email, verify_code, is_email_verify=True):
         verify.user = user
         if is_email_verify:
             verify.email_verify_code = verify_code
-
+ 
+    #from django.core.mail import send_mail
+    #send_mail('Subject here', 'Here is the message.', '380668771@qq.com', [to_email], fail_silently=False)
     email = EmailMessage(PASSWORD_VERIFY_CODE_EMAIL_SUBJECT,
                          PASSWORD_VERIFY_CODE_EMAIL_CONTENT % verify_code, to=[to_email])
     try:
@@ -277,7 +277,6 @@ def send_email(user, to_email, verify_code, is_email_verify=True):
     except smtplib.SMTPDataError:
         # todo not send email
         pass
-
 
 @api_view(['POST'])
 def reset_password_with_verify_code_view(request):

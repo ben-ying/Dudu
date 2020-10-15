@@ -88,7 +88,7 @@ MSG_ADD_LIKE_SUCCESS = _(u'点赞成功')
 MSG_GET_CATEGORIES_SUCCESS = _(u'获取类别成功')
 MSG_GET_FUND_SUCCESS = _(u'获取Fund成功')
 
-PASSWORD_VERIFY_CODE_EMAIL_SUBJECT = _(u'忘记密码验证码－嘟嘟手记')
+PASSWORD_VERIFY_CODE_EMAIL_SUBJECT = _(u'IAER: 忘记密码验证码')
 PASSWORD_VERIFY_CODE_EMAIL_CONTENT = _(u'您的验证码：%s。\n本邮件是系统自动发送的，请勿直接回复！感谢您的访问，祝您使用愉快！')
 MSG_GET_APP_INFO_SUCCESS = _(u'获取应用版本信息')
 

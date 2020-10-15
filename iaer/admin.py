@@ -7,6 +7,7 @@ from .models import Fund
 from .models import Category
 from .models import Setting
 from .models import About
+from .models import Verify
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -51,3 +52,5 @@ class AboutAdmin(admin.ModelAdmin):
     fields = ('category', 'apk', 'apk_json', 'comment')
     search_fields = ('name', 'version_name', 'version_code', 'category')
 admin.site.register(About, AboutAdmin)
+
+admin.site.register(Verify)
