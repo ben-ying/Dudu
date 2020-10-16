@@ -148,6 +148,9 @@ class Verify(models.Model):
     def __str__(self):
         return self.user.get_username()
 
+    class Meta:
+        ordering = ['-created',]
+
 
 class Setting(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

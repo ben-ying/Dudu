@@ -76,6 +76,7 @@ MSG_UPDATE_USER_INFO_SUCCESS = _(u'更新用户信息成功')
 MSG_NOT_ACTIVE_USER = _(u'该用户暂时不可用')
 MSG_INCORRECT_USER_NAME_OR_PASSWORD = _(u'用户名或账号错误')
 MSG_SEND_VERIFY_CODE_SUCCESS = _(u'验证码发送成功')
+MSG_RESET_PASSWORD_SUCCESS = _(u'密码修改成功')
 MSG_EMPTY_VERIFY_CODE = _(u'验证码不能为空')
 MSG_INCORRECT_VERIFY_CODE = _(u'验证码错误')
 MSG_EXPIRED_VERIFY_CODE = _(u'验证码已过期')
@@ -89,7 +90,7 @@ MSG_GET_CATEGORIES_SUCCESS = _(u'获取类别成功')
 MSG_GET_FUND_SUCCESS = _(u'获取Fund成功')
 
 PASSWORD_VERIFY_CODE_EMAIL_SUBJECT = _(u'IAER: 忘记密码验证码')
-PASSWORD_VERIFY_CODE_EMAIL_CONTENT = _(u'您的验证码：%s。\n本邮件是系统自动发送的，请勿直接回复！感谢您的访问，祝您使用愉快！')
+PASSWORD_VERIFY_CODE_EMAIL_CONTENT = _(u'您的验证码：%s，5分钟内有效。\n本邮件是系统自动发送的，请勿直接回复！感谢您的访问，祝您使用愉快！')
 MSG_GET_APP_INFO_SUCCESS = _(u'获取应用版本信息')
 
 # event message

@@ -17,7 +17,7 @@ from validate_email import validate_email
 from django.core.mail import EmailMessage
 
 from iaer.constants import CODE_DUPLICATE_EMAIL, MSG_SEND_VERIFY_CODE_SUCCESS, MSG_NO_SUCH_EMAIL, \
-    MSG_EMPTY_VERIFY_CODE, \
+    MSG_EMPTY_VERIFY_CODE, MSG_RESET_PASSWORD_SUCCESS, \
     CODE_EMPTY_VERIFY_CODE, MSG_INCORRECT_VERIFY_CODE, CODE_INCORRECT_VERIFY_CODE, CODE_EXPIRED_VERIFY_CODE, \
     MSG_EXPIRED_VERIFY_CODE, \
     VERIFY_CODE_EXPIRED_TIME, CODE_USER_NOT_EXISTS, MSG_USER_NOT_EXISTS, MSG_GET_USER_DETAIL_SUCCESS, \
@@ -298,15 +298,16 @@ def reset_password_with_verify_code_view(request):
 
         user = get_user(email=email)
         if user:
-            user = User.objects.get(user=user)
+            user = User.objects.get(auth_user=user)
             if Verify.objects.filter(user=user, email_verify_code=code.lower()):
-                verify = Verify.objects.get(user=user, email_verify_code=code.lower())
+                verify = Verify.objects.filter(user=user, email_verify_code=code.lower())[0]
                 if (time.time() - float(format(verify.created, 'U'))) > VERIFY_CODE_EXPIRED_TIME:
                     return simple_json_response(CODE_EXPIRED_VERIFY_CODE, MSG_EXPIRED_VERIFY_CODE)
                 else:
-                    user.set_password(password)
+                    user.auth_user.set_password(password)
+                    user.auth_user.save()
                     user.save()
-                    return simple_json_response(CODE_SUCCESS, MSG_SEND_VERIFY_CODE_SUCCESS)
+                    return simple_json_response(CODE_SUCCESS, MSG_RESET_PASSWORD_SUCCESS)
             else:
                 return simple_json_response(CODE_INCORRECT_VERIFY_CODE, MSG_INCORRECT_VERIFY_CODE)
         else:
